@@ -9,6 +9,10 @@ import {
   GetCartLineItemsBulkParams,
   StoreAddLineItemsBulk,
 } from "./validators";
+import { 
+  StoreUpdateCartLineItem,
+  StoreGetCartsCart 
+} from "@medusajs/medusa/api/store/carts/validators";
 
 export const storeCartsMiddlewares: MiddlewareRoute[] = [
   {
@@ -18,6 +22,17 @@ export const storeCartsMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(StoreAddLineItemsBulk),
       validateAndTransformQuery(
         GetCartLineItemsBulkParams,
+        retrieveCartTransformQueryConfig
+      ),
+    ],
+  },
+  {
+    method: ["POST", "DELETE"],
+    matcher: "/store/carts/:id/line-items/:line_id",
+    middlewares: [
+      validateAndTransformBody(StoreUpdateCartLineItem),
+      validateAndTransformQuery(
+        StoreGetCartsCart,
         retrieveCartTransformQueryConfig
       ),
     ],

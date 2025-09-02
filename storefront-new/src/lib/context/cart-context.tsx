@@ -73,6 +73,23 @@ export function CartProvider({
     setIsUpdatingCart(false)
   }, [cart])
 
+  // Client-side only effect to sync optimistic items
+  useEffect(() => {
+    // Only run on client to prevent hydration mismatch
+    if (typeof window === 'undefined') return
+    
+    // Clear optimistic items when real cart data is received
+    if (cart && optimisticCart) {
+      const hasOptimisticItems = optimisticCart.items?.some(item => 
+        isOptimisticItemId(item.id)
+      )
+      if (hasOptimisticItems) {
+        console.log("Clearing optimistic items, syncing with real cart data")
+        setOptimisticCart(cart)
+      }
+    }
+  }, [cart, optimisticCart, setOptimisticCart])
+
   const handleOptimisticAddToCart = useCallback(
     async (payload: AddToCartEventPayload) => {
       let prevCart = {} as B2BCart
@@ -167,7 +184,15 @@ export function CartProvider({
             quantity: lineItem.quantity,
           })),
           countryCode: countryCode as string,
+        }).then((result) => {
+          console.log("Add to cart succeeded:", result)
+          console.log("Items added:", payload.lineItems.length)
         }).catch((e) => {
+          console.error("Add to cart failed:", e)
+          console.log("Previous cart state:", prevCart)
+          console.log("Current optimistic cart:", optimisticCart)
+          console.log("Failed payload:", payload)
+          
           if (e.message === "Cart is pending approval") {
             toast.error("Cart is locked for approval.")
           } else {
@@ -188,6 +213,29 @@ export function CartProvider({
     const item = optimisticCart?.items?.find(({ id }) => id === lineItem)
 
     if (!item) return
+
+    // Handle optimistic items - just remove them without API call
+    if (isOptimisticItemId(lineItem)) {
+      startTransition(() => {
+        setOptimisticCart((prev) => {
+          if (!prev) return prev
+
+          const optimisticItems = prev.items?.filter(({ id }) => id !== lineItem)
+
+          const optimisticTotal = optimisticItems?.reduce(
+            (acc, item) => acc + item.unit_price * item.quantity,
+            0
+          )
+
+          return {
+            ...prev,
+            item_subtotal: optimisticTotal || 0,
+            items: optimisticItems,
+          }
+        })
+      })
+      return
+    }
 
     let prevCart = {} as B2BCart
 
@@ -215,6 +263,7 @@ export function CartProvider({
     setIsUpdatingCart(true)
 
     await deleteLineItem(lineItem).catch((e) => {
+      console.error("Failed to delete item:", e)
       toast.error("Failed to delete item")
       setOptimisticCart(prevCart)
     })
@@ -227,6 +276,13 @@ export function CartProvider({
     const item = optimisticCart?.items?.find(({ id }) => id === lineItem)
 
     if (!item) return
+
+    // Don't allow updates to optimistic items
+    if (isOptimisticItemId(lineItem)) {
+      console.warn("Cannot update optimistic item:", lineItem)
+      toast.error("Please wait for the cart to sync before updating quantities")
+      return
+    }
 
     let prevCart = {} as B2BCart
 
@@ -270,16 +326,15 @@ export function CartProvider({
       })
     })
 
-    if (!isOptimisticItemId(lineItem)) {
-      setIsUpdatingCart(true)
-      await updateLineItem({
-        lineId: lineItem,
-        data: { quantity },
-      }).catch((e) => {
-        toast.error("Failed to update cart quantity")
-        setOptimisticCart(prevCart)
-      })
-    }
+    setIsUpdatingCart(true)
+    await updateLineItem({
+      lineId: lineItem,
+      data: { quantity },
+    }).catch((e) => {
+      console.error("Failed to update cart quantity:", e)
+      toast.error("Failed to update cart quantity")
+      setOptimisticCart(prevCart)
+    })
   }
 
   const handleEmptyCart = async () => {

@@ -181,7 +181,7 @@ export async function addToCartBulk({
       process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
   }
 
-  await fetch(
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/line-items/bulk`,
     {
       method: "POST",
@@ -189,13 +189,24 @@ export async function addToCartBulk({
       body: JSON.stringify({ line_items: lineItems }),
     }
   )
-    .then(async () => {
-      const fullfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fullfillmentCacheTag)
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-    })
-    .catch(medusaError)
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}))
+    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`)
+  }
+
+  // Wait for the response to be fully processed
+  const updatedCart = await response.json()
+  
+  // Add a small delay to ensure database consistency
+  await new Promise(resolve => setTimeout(resolve, 100))
+
+  const fullfillmentCacheTag = await getCacheTag("fulfillment")
+  revalidateTag(fullfillmentCacheTag)
+  const cartCacheTag = await getCacheTag("carts")
+  revalidateTag(cartCacheTag)
+
+  return updatedCart
 }
 
 export async function updateLineItem({
@@ -219,13 +230,30 @@ export async function updateLineItem({
     ...(await getAuthHeaders()),
   }
 
-  await sdk.store.cart
-    .updateLineItem(cartId, lineId, data, {}, headers)
-    .then(async () => {
+  // Use our custom line item update endpoint that handles the Medusa 2.4 timing bug
+  await fetch(
+    `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cartId}/line-items/${lineId}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getAuthHeaders()),
+      },
+      body: JSON.stringify(data),
+    }
+  )
+    .then(async (response) => {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`)
+      }
+      
       const fullfillmentCacheTag = await getCacheTag("fulfillment")
       revalidateTag(fullfillmentCacheTag)
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
+      
+      return response.json()
     })
     .catch(medusaError)
 }
