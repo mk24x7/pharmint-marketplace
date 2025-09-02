@@ -14,12 +14,12 @@ const Login = ({ setCurrentView }: Props) => {
 
   return (
     <div
-      className="max-w-sm w-full flex flex-col items-center"
+      className="max-w-sm w-full flex flex-col items-center bg-background-secondary/30 backdrop-blur-sm border border-pharmint-border rounded-xl p-8"
       data-testid="login-page"
     >
-      <h1 className="text-large-semi uppercase mb-6">Welcome back</h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-8">
-        Sign in to access an enhanced shopping experience.
+      <h1 className="text-large-semi uppercase mb-6 text-pharmint-white">Welcome back to Pharmint.PH</h1>
+      <p className="text-center text-base-regular text-pharmint-muted mb-8">
+        Sign in to access your account and manage your pharmaceutical orders.
       </p>
       <form className="w-full" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
@@ -46,11 +46,11 @@ const Login = ({ setCurrentView }: Props) => {
           Sign in
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
+      <span className="text-center text-pharmint-muted text-small-regular mt-6">
         Not a member?{" "}
         <button
           onClick={() => setCurrentView(LOGIN_VIEW.REGISTER)}
-          className="underline"
+          className="text-accent hover:text-accent-hover underline transition-colors duration-200"
           data-testid="register-button"
         >
           Join us

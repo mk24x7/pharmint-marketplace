@@ -71,23 +71,30 @@ const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
                       })}
                     </ul>
                     <div className="flex flex-col gap-y-6">
-                      <div
-                        className="flex justify-between"
-                        onMouseEnter={toggleState.open}
-                        onMouseLeave={toggleState.close}
-                      >
-                        {regions && (
-                          <CountrySelect
-                            toggleState={toggleState}
-                            regions={regions}
-                          />
-                        )}
-                        <ArrowRightMini
-                          className={clx(
-                            "transition-transform duration-150",
-                            toggleState.state ? "-rotate-90" : ""
+                      <div className="flex flex-col gap-y-3">
+                        <div className="flex justify-center">
+                          <Text className="txt-compact-small text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
+                            Coming Soon - More Countries & Regions
+                          </Text>
+                        </div>
+                        <div
+                          className="flex justify-between"
+                          onMouseEnter={toggleState.open}
+                          onMouseLeave={toggleState.close}
+                        >
+                          {regions && (
+                            <CountrySelect
+                              toggleState={toggleState}
+                              regions={regions}
+                            />
                           )}
-                        />
+                          <ArrowRightMini
+                            className={clx(
+                              "transition-transform duration-150",
+                              toggleState.state ? "-rotate-90" : ""
+                            )}
+                          />
+                        </div>
                       </div>
                       <Text className="flex justify-between txt-compact-small">
                         © {new Date().getFullYear()} Pharmint.PH. All rights

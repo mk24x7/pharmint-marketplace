@@ -73,11 +73,11 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
             : undefined
         }
       >
-        <ListboxButton className="py-1 w-full">
+        <ListboxButton className="py-1 w-full text-pharmint-white hover:text-accent transition-colors duration-200">
           <div className="txt-compact-small flex items-start gap-x-2">
-            <span>Shipping to:</span>
+            <span className="text-pharmint-muted">Shipping to:</span>
             {current && (
-              <span className="txt-compact-small flex items-center gap-x-2">
+              <span className="txt-compact-small flex items-center gap-x-2 text-pharmint-white">
                 {/* @ts-ignore */}
                 <ReactCountryFlag
                   svg
@@ -101,7 +101,7 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
             leaveTo="opacity-0"
           >
             <ListboxOptions
-              className="absolute -bottom-[calc(100%-36px)] left-0 xsmall:left-auto xsmall:right-0 max-h-[442px] overflow-y-scroll z-[900] bg-white drop-shadow-md text-small-regular uppercase text-black no-scrollbar rounded-rounded w-full"
+              className="absolute -bottom-[calc(100%-36px)] left-0 xsmall:left-auto xsmall:right-0 max-h-[442px] overflow-y-scroll z-[900] bg-pharmint-black/95 backdrop-blur-sm border border-pharmint-border rounded-lg shadow-2xl text-small-regular uppercase text-pharmint-white no-scrollbar w-full"
               static
             >
               {options?.map((o, index) => {
@@ -109,7 +109,7 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
                   <ListboxOption
                     key={index}
                     value={o}
-                    className="py-2 hover:bg-gray-200 px-3 cursor-pointer flex items-center gap-x-2"
+                    className="py-2 hover:bg-accent hover:text-white px-3 cursor-pointer flex items-center gap-x-2 transition-colors duration-200"
                   >
                     {/* @ts-ignore */}
                     <ReactCountryFlag

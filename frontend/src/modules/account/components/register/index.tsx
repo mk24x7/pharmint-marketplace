@@ -17,15 +17,15 @@ const Register = ({ setCurrentView }: Props) => {
 
   return (
     <div
-      className="max-w-sm flex flex-col items-center"
+      className="max-w-sm flex flex-col items-center bg-background-secondary/30 backdrop-blur-sm border border-pharmint-border rounded-xl p-8"
       data-testid="register-page"
     >
-      <h1 className="text-large-semi uppercase mb-6">
-        Become a Medusa Store Member
+      <h1 className="text-large-semi uppercase mb-6 text-pharmint-white">
+        Join Pharmint.PH
       </h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-4">
-        Create your Medusa Store Member profile, and get access to an enhanced
-        shopping experience.
+      <p className="text-center text-base-regular text-pharmint-muted mb-4">
+        Create your Pharmint.PH account and get access to pharmaceutical products
+        with enhanced shopping experience.
       </p>
       <form className="w-full flex flex-col" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
@@ -68,18 +68,18 @@ const Register = ({ setCurrentView }: Props) => {
           />
         </div>
         <ErrorMessage error={message} data-testid="register-error" />
-        <span className="text-center text-ui-fg-base text-small-regular mt-6">
-          By creating an account, you agree to Medusa Store&apos;s{" "}
+        <span className="text-center text-pharmint-muted text-small-regular mt-6">
+          By creating an account, you agree to Pharmint.PH&apos;s{" "}
           <LocalizedClientLink
             href="/content/privacy-policy"
-            className="underline"
+            className="text-accent hover:text-accent-hover underline transition-colors duration-200"
           >
             Privacy Policy
           </LocalizedClientLink>{" "}
           and{" "}
           <LocalizedClientLink
             href="/content/terms-of-use"
-            className="underline"
+            className="text-accent hover:text-accent-hover underline transition-colors duration-200"
           >
             Terms of Use
           </LocalizedClientLink>
@@ -89,11 +89,11 @@ const Register = ({ setCurrentView }: Props) => {
           Join
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
+      <span className="text-center text-pharmint-muted text-small-regular mt-6">
         Already a member?{" "}
         <button
           onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
-          className="underline"
+          className="text-accent hover:text-accent-hover underline transition-colors duration-200"
         >
           Sign in
         </button>

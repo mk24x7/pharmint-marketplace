@@ -41,13 +41,31 @@ module.exports = {
           muted: "rgba(255, 255, 255, 0.6)",
           border: "rgba(255, 255, 255, 0.1)",
         },
+        // Override Medusa UI preset colors for dark theme
         background: {
           DEFAULT: "#000000",
-          secondary: "rgba(255, 255, 255, 0.05)",
+          secondary: "rgba(0, 0, 0, 0.6)",
         },
         accent: {
           DEFAULT: "#D14627",
           hover: "#B53A20",
+        },
+        // Override specific UI background colors from Medusa preset
+        ui: {
+          bg: {
+            base: "#000000",
+            subtle: "rgba(0, 0, 0, 0.4)",
+            field: "rgba(0, 0, 0, 0.6)",
+            "field-hover": "rgba(0, 0, 0, 0.7)",
+            secondary: "rgba(0, 0, 0, 0.6)",
+          },
+          border: {
+            base: "rgba(255, 255, 255, 0.1)",
+          },
+          fg: {
+            base: "#FFFFFF",
+            muted: "rgba(255, 255, 255, 0.6)",
+          },
         },
       },
       borderRadius: {

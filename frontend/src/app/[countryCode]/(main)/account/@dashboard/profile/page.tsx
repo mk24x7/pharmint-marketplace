@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 
-import ProfilePhone from "@modules/account//components/profile-phone"
+import ProfilePhone from "@modules/account/components/profile-phone"
 import ProfileBillingAddress from "@modules/account/components/profile-billing-address"
 import ProfileEmail from "@modules/account/components/profile-email"
 import ProfileName from "@modules/account/components/profile-name"
@@ -26,8 +26,8 @@ export default async function Profile() {
   return (
     <div className="w-full" data-testid="profile-page-wrapper">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi">Profile</h1>
-        <p className="text-base-regular">
+        <h1 className="text-2xl-semi text-pharmint-white">Profile</h1>
+        <p className="text-base-regular text-pharmint-muted">
           View and update your profile information, including your name, email,
           and phone number. You can also update your billing address, or change
           your password.
@@ -49,6 +49,5 @@ export default async function Profile() {
 }
 
 const Divider = () => {
-  return <div className="w-full h-px bg-gray-200" />
+  return <div className="w-full h-px bg-pharmint-border" />
 }
-;``
