@@ -1,12 +1,12 @@
 <h1 align="center">
-  <a href="http://www.amitmerchant.com/electron-markdownify"><img src="https://github.com/user-attachments/assets/38ba3a7b-e07b-4117-8187-7b171eae3769" alt="B2B Commerce Starter" width="80" height="80"></a>
+  <a href="https://pharmint.ph"><img src="https://github.com/user-attachments/assets/38ba3a7b-e07b-4117-8187-7b171eae3769" alt="Pharmint Marketplace" width="80" height="80"></a>
   <br>
   <br>
-  Medusa B2B Commerce Starter
+  Pharmint Marketplace
   <br>
 </h1>
 
-<p align="center">Customizable B2B ecommerce built with <a href="https://medusajs.com/" target="_blank">Medusa 2.0</a> & Next.js Storefront</p>
+<p align="center">B2B Pharmaceutical Commerce Platform built with <a href="https://medusajs.com/" target="_blank">Medusa 2.0</a> & Next.js</p>
 
 <p align="center">
   <a href="https://github.com/medusajs/medusa/blob/master/CONTRIBUTING.md">
@@ -54,7 +54,7 @@
 &nbsp;
 
 ## Overview
-For a full feature overview, please visit [the project wiki](https://github.com/medusajs/b2b-starter-medusa/wiki).
+Pharmint is a comprehensive B2B pharmaceutical marketplace designed for efficient pharmaceutical commerce and distribution.
 
 #### Core features
 
@@ -117,7 +117,7 @@ For a full feature overview, please visit [the project wiki](https://github.com/
 
 ```bash
 # Clone the repository
-git clone https://github.com/medusajs/b2b-starter-medusa.git
+git clone https://github.com/mk24x7/pharmint-marketplace.git
 
 ## Setup Backend
 
@@ -139,7 +139,7 @@ yarn dev
 ## Setup Storefront
 
 # Go to folder
-cd ../storefront
+cd ../storefront-new
 
 # Clone .env.template
 cp .env.template .env
@@ -155,7 +155,7 @@ yarn install
     - <b>email</b>: `admin@test.com`
     - <b>password</b>: `supersecret`
 - ✅ Copy token key of "Webshop"
-- ✅ Open file - `storefront/.env`
+- ✅ Open file - `storefront-new/.env`
 - ✅ Add token to this var - `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`
 
 ```
@@ -202,6 +202,6 @@ To reflect any changes made to data models, make sure to run `npx medusa db:migr
 
 ## Contributors
 
-<a href = "https://github.com/medusajs/b2b-starter-medusa/graphs/contributors">
-  <img src = "https://contrib.rocks/image?repo=medusajs/b2b-starter-medusa"/>
+<a href = "https://github.com/mk24x7/pharmint-marketplace/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=mk24x7/pharmint-marketplace"/>
 </a>

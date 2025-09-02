@@ -137,7 +137,7 @@ export default async function Footer() {
               <ul className="grid grid-cols-1 gap-y-2 text-pharmint-muted txt-small">
                 <li>
                   <a
-                    href="https://github.com/medusajs"
+                    href="https://github.com/mk24x7/pharmint-marketplace"
                     target="_blank"
                     rel="noreferrer"
                     className="hover:text-accent transition-colors"
@@ -147,22 +147,22 @@ export default async function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://docs.medusajs.com"
+                    href="https://pharmint.ph/about"
                     target="_blank"
                     rel="noreferrer"
                     className="hover:text-accent transition-colors"
                   >
-                    Documentation
+                    About Us
                   </a>
                 </li>
                 <li>
                   <a
-                    href="https://github.com/medusajs/b2b-starter-medusa"
+                    href="https://pharmint.ph/contact"
                     target="_blank"
                     rel="noreferrer"
                     className="hover:text-accent transition-colors"
                   >
-                    Source code
+                    Contact
                   </a>
                 </li>
               </ul>
