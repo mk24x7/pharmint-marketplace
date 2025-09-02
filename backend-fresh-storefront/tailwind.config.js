@@ -34,6 +34,21 @@ module.exports = {
           80: "#1F2937",
           90: "#111827",
         },
+        pharmint: {
+          black: "#000000",
+          red: "#D14627",
+          white: "#FFFFFF",
+          muted: "rgba(255, 255, 255, 0.6)",
+          border: "rgba(255, 255, 255, 0.1)",
+        },
+        background: {
+          DEFAULT: "#000000",
+          secondary: "rgba(255, 255, 255, 0.05)",
+        },
+        accent: {
+          DEFAULT: "#D14627",
+          hover: "#B53A20",
+        },
       },
       borderRadius: {
         none: "0px",
@@ -60,6 +75,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
+          "var(--font-geist-sans)",
           "Inter",
           "-apple-system",
           "BlinkMacSystemFont",
@@ -140,6 +156,19 @@ module.exports = {
           "0%": { transform: "translateY(-100%)" },
           "100%": { transform: "translateY(0)" },
         },
+        "fade-in-up": {
+          from: { opacity: 0, transform: "translateY(20px)" },
+          to: { opacity: 1, transform: "translateY(0)" },
+        },
+        "pulse-glow": {
+          "0%, 100%": { opacity: 1 },
+          "50%": { opacity: 0.7 },
+        },
+        "float": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(30px, -30px) scale(1.05)" },
+          "66%": { transform: "translate(-20px, 20px) scale(0.95)" },
+        },
       },
       animation: {
         ring: "ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
@@ -155,6 +184,12 @@ module.exports = {
         enter: "enter 200ms ease-out",
         "slide-in": "slide-in 1.2s cubic-bezier(.41,.73,.51,1.02)",
         leave: "leave 150ms ease-in forwards",
+        "fade-in-up": "fade-in-up 0.8s ease-out",
+        "pulse-glow": "pulse-glow 2s infinite",
+        "float": "float 20s ease-in-out infinite",
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
     },
   },

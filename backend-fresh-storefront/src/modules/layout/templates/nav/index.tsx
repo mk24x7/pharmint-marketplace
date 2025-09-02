@@ -11,8 +11,8 @@ export default async function Nav() {
 
   return (
     <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
-        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
+      <header className="relative h-16 mx-auto border-b duration-200 bg-background border-pharmint-border backdrop-blur-sm bg-background/95">
+        <nav className="content-container txt-xsmall-plus text-pharmint-muted flex items-center justify-between w-full h-full text-small-regular">
           <div className="flex-1 basis-0 h-full flex items-center">
             <div className="h-full">
               <SideMenu regions={regions} />
@@ -22,17 +22,25 @@ export default async function Nav() {
           <div className="flex items-center h-full">
             <LocalizedClientLink
               href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
+              className="hover:text-accent transition-colors duration-200 flex items-center w-fit"
               data-testid="nav-store-link"
             >
-              Medusa Store
+              <h1 className="text-base font-medium flex items-center">
+                <img 
+                  src="/logo-dark.png" 
+                  alt="Pharmint Logo" 
+                  className="inline mr-2 h-8 w-8 object-contain"
+                />
+                <span className="font-bold text-white">Pharmint</span>
+                <span className="ml-1 text-accent font-medium">.PH</span>
+              </h1>
             </LocalizedClientLink>
           </div>
 
           <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
             <div className="hidden small:flex items-center gap-x-6 h-full">
               <LocalizedClientLink
-                className="hover:text-ui-fg-base"
+                className="hover:text-white text-pharmint-muted"
                 href="/account"
                 data-testid="nav-account-link"
               >
@@ -42,7 +50,7 @@ export default async function Nav() {
             <Suspense
               fallback={
                 <LocalizedClientLink
-                  className="hover:text-ui-fg-base flex gap-2"
+                  className="hover:text-white text-pharmint-muted flex gap-2"
                   href="/cart"
                   data-testid="nav-cart-link"
                 >
