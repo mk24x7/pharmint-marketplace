@@ -35,10 +35,9 @@ git pull origin main
 
 # Database restoration
 sudo -u postgres createdb pharmint
-sudo -u postgres psql -d pharmint -f pharmint-seed-20250903.sql
+sudo -u postgres psql -d pharmint -f pharmint-production-seed-20250903.sql
 
-# Enable pgcrypto extension
-sudo -u postgres psql -d pharmint -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+# Note: pgcrypto extension is included in the production dump
 ```
 
 ### 3. Backend Configuration
@@ -244,14 +243,241 @@ pm2 startup
 
 **Why:** PM2 provides process management, automatic restarts, and systemd integration for production environments.
 
+### ❌ Assumption 6: Image Domain Configuration  
+**Incorrect Approach:**
+```javascript
+// next.config.js - Missing external image domains
+images: {
+  remotePatterns: [
+    { hostname: "localhost" },
+    { hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com" }
+    // Missing pharmint.net domain
+  ]
+}
+```
+
+**Issue:** Product images stored on external domains (e.g., `pharmint.net`) return 400 Bad Request errors.
+
+**✅ Correct Approach:**
+```javascript
+// next.config.js - Include all image domains
+images: {
+  remotePatterns: [
+    { protocol: "https", hostname: "pharmint.net" }, // External image domain
+    { protocol: "https", hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com" }
+  ]
+}
+```
+
+**Why:** Next.js Image optimization requires explicit domain allowlisting for security. All external image sources must be declared in `remotePatterns`.
+
+### ❌ Assumption 7: API Data Fetching Completeness
+**Incorrect Approach:**
+```typescript
+// products.ts - Missing image fields in API query
+fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags"
+```
+
+**Issue:** Frontend receives no image data, displays placeholder images, no actual image requests made.
+
+**✅ Correct Approach:**
+```typescript  
+// products.ts - Include image fields in API query
+fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags,+images,+thumbnail"
+```
+
+**Why:** Medusa API only returns requested fields. Without `+images,+thumbnail`, the frontend has no image URLs to display or optimize.
+
+### ❌ Assumption 8: Cache Management Strategy
+**Incorrect Approach:**
+```typescript
+// Aggressive caching without invalidation strategy
+cache: "force-cache"  // Never revalidates
+```
+
+**Issue:** Stale data persists indefinitely, deleted products still show, performance degrades with cache misses.
+
+**✅ Correct Approach:**
+```bash
+# Manual cache clearing when needed
+rm -rf .next/cache
+pm2 restart frontend
+
+# Better: Implement proper cache tagging and revalidation
+```
+
+**Why:** Production requires cache invalidation strategy. `force-cache` without tags leads to stale data and user experience issues.
+
+## Advanced PM2 Configuration
+
+### Professional Ecosystem Setup
+Create `ecosystem.config.js` for production-grade process management:
+
+```javascript
+module.exports = {
+  apps: [
+    {
+      name: 'pharmint-backend',
+      cwd: './backend/.medusa/server',
+      script: 'npm',
+      args: 'run start',
+      env: {
+        NODE_ENV: 'production',
+        JWT_SECRET: 'your-strong-jwt-secret',
+        COOKIE_SECRET: 'your-strong-cookie-secret',
+        DATABASE_URL: 'postgresql://postgres:pharmint123@localhost:5432/pharmint',
+        MEDUSA_BACKEND_URL: 'https://api.pharmint.ph'
+      },
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '1G',
+      log_date_format: 'YYYY-MM-DD HH:mm Z'
+    },
+    {
+      name: 'pharmint-frontend', 
+      cwd: './frontend',
+      script: 'npm',
+      args: 'run start',
+      env: {
+        NODE_ENV: 'production',
+        MEDUSA_BACKEND_URL: 'https://api.pharmint.ph',
+        NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: 'your-publishable-key'
+      },
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '1G',
+      log_date_format: 'YYYY-MM-DD HH:mm Z'
+    }
+  ]
+};
+```
+
+### PM2 Management Commands
+```bash
+# Start using ecosystem
+pm2 start ecosystem.config.js
+
+# Monitor services
+pm2 status
+pm2 logs
+pm2 logs pharmint-backend --lines 50
+pm2 monit
+
+# Restart strategies
+pm2 restart pharmint-frontend  # Restart single service
+pm2 reload pharmint-backend    # Zero-downtime reload
+pm2 restart all                # Restart all services
+
+# Save and setup auto-start
+pm2 save
+pm2 startup
+```
+
+## Performance Optimization
+
+### Cache Management
+```bash
+# Clear Next.js cache (safe restart)
+pm2 stop pharmint-frontend
+rm -rf frontend/.next/cache  
+pm2 start pharmint-frontend
+
+# Clear all caches (nuclear option)
+pm2 stop all
+rm -rf frontend/.next/cache
+pm2 start all
+```
+
+### Database Performance
+```sql
+-- Check active connections
+SELECT count(*) FROM pg_stat_activity WHERE datname = 'pharmint';
+
+-- Terminate hanging connections (if needed)
+SELECT pg_terminate_backend(pid) FROM pg_stat_activity 
+WHERE datname = 'pharmint' AND pid <> pg_backend_pid();
+```
+
+### Image Optimization Troubleshooting
+```bash
+# Test external image accessibility
+curl -I https://pharmint.net/wp-content/uploads/2024/01/Product-placeholder-Pharmint.png
+
+# Debug Next.js image optimization
+curl -I "https://pharmint.ph/_next/image?url=https%3A%2F%2Fpharmint.net%2Fwp-content%2Fuploads%2F2024%2F01%2FProduct-placeholder-Pharmint.png&w=640&q=75"
+
+# Check product API returns image data
+curl -H "x-publishable-api-key: your-key" "https://api.pharmint.ph/store/products?limit=1&fields=+images,+thumbnail"
+```
+
+### Database Management
+
+#### Creating Fresh Database Dumps
+```bash
+# Create production database dump (on server)
+cd pharmint-marketplace
+sudo -u postgres pg_dump --clean --create --if-exists pharmint > pharmint-production-seed-$(date +%Y%m%d).sql
+
+# Check dump size and contents
+ls -lh pharmint-production-seed-*.sql
+head -20 pharmint-production-seed-*.sql
+
+# Copy to local repository for version control
+scp user@server:/path/to/pharmint-production-seed-YYYYMMDD.sql ./
+```
+
+#### Database Restoration for New Installations
+```bash
+# Method 1: Direct restoration (recommended)
+sudo -u postgres createdb pharmint
+sudo -u postgres psql -d pharmint -f pharmint-production-seed-20250903.sql
+
+# Method 2: Manual restoration with error handling
+sudo -u postgres createdb pharmint
+sudo -u postgres psql -d pharmint < pharmint-production-seed-20250903.sql 2>&1 | tee restore.log
+```
+
+#### Current Database Statistics
+- **Size**: ~2MB compressed dump
+- **Tables**: Complete Medusa v2 schema with B2B extensions
+- **Records**: 261 products with complete metadata
+- **Users**: Production admin user configured
+- **Extensions**: pgcrypto enabled for password hashing
+
 ## Key Lessons Learned
 
 1. **Always follow official deployment guides** - Custom approaches often miss critical configurations
-2. **Environment variables matter** - Medusa v2 has specific naming conventions that differ from v1
+2. **Environment variables matter** - Medusa v2 has specific naming conventions that differ from v1  
 3. **Process management is crucial** - Manual processes don't survive production scenarios
 4. **CORS and backend URLs affect file services** - Localhost references cause production issues
 5. **Database extensions required** - pgcrypto needed for proper password hashing
 6. **Build from correct directory** - Medusa v2 requires running from `.medusa/server` for admin functionality
+7. **Image domains must be explicitly allowed** - Next.js security requires `remotePatterns` configuration
+8. **API fields determine frontend data** - Missing `+images,+thumbnail` means no image data returned
+9. **Cache invalidation is critical** - Production needs cache clearing strategy for data consistency
+10. **PM2 ecosystem config improves reliability** - Professional process management with monitoring and auto-restart
+
+## Troubleshooting Common Issues
+
+### Images Not Displaying
+1. **Check Next.js config** - Verify `pharmint.net` in `remotePatterns`
+2. **Verify API fields** - Ensure `+images,+thumbnail` in products query
+3. **Clear cache** - Remove `.next/cache` and restart frontend
+4. **Test source images** - Verify external image URLs are accessible
+
+### Slow Performance  
+1. **Check product count** - Large catalogs (>200 products) affect performance
+2. **Monitor PM2 processes** - Check memory usage and restart if needed
+3. **Clear caches** - Remove stale cached data
+4. **Database connections** - Monitor and terminate hanging connections
+
+### PM2 Process Issues
+1. **Check ecosystem config** - Verify environment variables are set
+2. **Monitor logs** - Use `pm2 logs` to identify startup issues  
+3. **Restart strategy** - Use `pm2 reload` for zero-downtime updates
+4. **Save configuration** - Always `pm2 save` after successful setup
 
 ## Health Checks
 
