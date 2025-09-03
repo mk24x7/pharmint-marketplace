@@ -40,6 +40,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "pharmint.net",
       },
+      {
+        protocol: "http",
+        hostname: "pharmint.net",
+      },
     ],
   },
 }
