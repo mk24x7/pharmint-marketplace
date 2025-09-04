@@ -35,7 +35,7 @@ git pull origin main
 
 # Database restoration
 sudo -u postgres createdb pharmint
-sudo -u postgres psql -d pharmint -f pharmint-production-seed-20250903.sql
+sudo -u postgres psql -d pharmint -f pharmint-production-dump-20250904.sql
 
 # Note: pgcrypto extension is included in the production dump
 ```
@@ -432,11 +432,11 @@ scp user@server:/path/to/pharmint-production-seed-YYYYMMDD.sql ./
 ```bash
 # Method 1: Direct restoration (recommended)
 sudo -u postgres createdb pharmint
-sudo -u postgres psql -d pharmint -f pharmint-production-seed-20250903.sql
+sudo -u postgres psql -d pharmint -f pharmint-production-dump-20250904.sql
 
 # Method 2: Manual restoration with error handling
 sudo -u postgres createdb pharmint
-sudo -u postgres psql -d pharmint < pharmint-production-seed-20250903.sql 2>&1 | tee restore.log
+sudo -u postgres psql -d pharmint < pharmint-production-dump-20250904.sql 2>&1 | tee restore.log
 ```
 
 #### Current Database Statistics
