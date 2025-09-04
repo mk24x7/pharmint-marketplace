@@ -18,17 +18,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Production cache management
-  experimental: {
-    // Ensure stable builds in production
-    incrementalCacheHandlerPath: process.env.NODE_ENV === 'production' 
-      ? require.resolve('./cache-handler.js') 
-      : undefined,
-  },
   // Cache configuration for production stability
-  cacheHandler: process.env.NODE_ENV === 'production' ? './cache-handler.js' : undefined,
   cacheMaxMemorySize: 50 * 1024 * 1024, // 50MB
-  // Disable cache when in development to prevent corruption
+  // Disable problematic caches in development to prevent corruption
   ...(process.env.NODE_ENV === 'development' && {
     experimental: {
       isrMemoryCacheSize: 0, // Disable ISR memory cache in development
