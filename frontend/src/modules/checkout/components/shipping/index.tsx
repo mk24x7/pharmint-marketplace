@@ -362,7 +362,7 @@ const Shipping: React.FC<ShippingProps> = ({
             />
             <Button
               size="large"
-              className="mt"
+              className="mt-6 bg-pharmint-white text-pharmint-black hover:bg-pharmint-gray border-pharmint-white"
               onClick={handleSubmit}
               isLoading={isLoading}
               disabled={!cart.shipping_methods?.[0]}
