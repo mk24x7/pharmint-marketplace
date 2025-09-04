@@ -12,13 +12,19 @@
     "build": "next build",
     "start": "next start -p 8000",
     "lint": "next lint",
-    "analyze": "ANALYZE=true next build"
+    "analyze": "ANALYZE=true next build",
+    "clear-cache": "node scripts/clear-cache.js",
+    "clear-cache:build": "node scripts/clear-cache.js --build",
+    "clear-cache:app": "node scripts/clear-cache.js --app",
+    "build:production": "npm run clear-cache:build && next build",
+    "postbuild": "echo 'Build completed. Cache directories managed.'"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@medusajs/js-sdk": "latest",
     "@medusajs/ui": "latest",
+    "@neshca/cache-handler": "^1.9.0",
     "@radix-ui/react-accordion": "^1.2.1",
     "@stripe/react-stripe-js": "^1.7.2",
     "@stripe/stripe-js": "^1.29.0",
