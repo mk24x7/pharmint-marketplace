@@ -29,18 +29,28 @@ export const retrieveCustomer =
       ...(await getCacheOptions("customers")),
     }
 
-    return await sdk.client
-      .fetch<{ customer: HttpTypes.StoreCustomer }>(`/store/customers/me`, {
-        method: "GET",
-        query: {
-          fields: "*orders",
-        },
-        headers,
-        next,
-        cache: "force-cache",
-      })
-      .then(({ customer }) => customer)
-      .catch(() => null)
+    try {
+      return await sdk.client
+        .fetch<{ customer: HttpTypes.StoreCustomer }>(`/store/customers/me`, {
+          method: "GET",
+          query: {
+            fields: "*orders",
+          },
+          headers,
+          next,
+          cache: "force-cache",
+        })
+        .then(({ customer }) => customer)
+    } catch (error: any) {
+      // Handle expired/invalid tokens - just log and return null
+      // Client-side components will handle token cleanup
+      if (error?.status === 401 || error?.message?.includes('Unauthorized')) {
+        console.log("Customer authentication failed - expired token detected")
+        return null
+      }
+      
+      return null
+    }
   }
 
 export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
@@ -147,15 +157,42 @@ export async function transferCart() {
   const cartId = await getCartId()
 
   if (!cartId) {
+    console.log("No cart ID found for transfer")
     return
   }
 
   const headers = await getAuthHeaders()
+  
+  if (!headers) {
+    console.log("No auth headers found for cart transfer")
+    throw new Error("Authentication required for cart transfer")
+  }
 
-  await sdk.store.cart.transferCart(cartId, {}, headers)
-
-  const cartCacheTag = await getCacheTag("carts")
-  revalidateTag(cartCacheTag)
+  try {
+    console.log("Attempting to transfer cart:", cartId)
+    console.log("Auth headers present:", !!headers?.authorization)
+    
+    await sdk.store.cart.transferCart(cartId, {}, headers)
+    console.log("Cart transfer successful")
+    
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+  } catch (error: any) {
+    console.error("Cart transfer failed:", error)
+    
+    // Handle expired/invalid tokens by using Server Action for cleanup
+    if (error?.status === 401 || error?.message?.includes('Unauthorized')) {
+      console.log("Cart transfer failed due to authentication - token expired")
+      
+      // Import and use the Server Action
+      const { clearExpiredToken } = await import("../../app/actions/auth")
+      await clearExpiredToken()
+      
+      throw new Error("Session expired. Please refresh and log in again.")
+    }
+    
+    throw error
+  }
 }
 
 export const addCustomerAddress = async (

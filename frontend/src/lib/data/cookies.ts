@@ -13,7 +13,7 @@ export const getAuthHeaders = async (): Promise<
     }
 
     return { authorization: `Bearer ${token}` }
-  } catch {
+  } catch (error) {
     return {}
   }
 }

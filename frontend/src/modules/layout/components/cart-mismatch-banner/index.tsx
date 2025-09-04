@@ -5,6 +5,7 @@ import { ExclamationCircleSolid } from "@medusajs/icons"
 import { StoreCart, StoreCustomer } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
 import { useState } from "react"
+import { clearExpiredToken } from "../../../../app/actions/auth"
 
 function CartMismatchBanner(props: {
   customer: StoreCustomer
@@ -24,7 +25,10 @@ function CartMismatchBanner(props: {
       setActionText("Transferring..")
 
       await transferCart()
-    } catch {
+      console.log("Transfer completed from banner")
+      // If successful, component should unmount
+    } catch (error) {
+      console.error("Transfer failed in banner:", error)
       setActionText("Run transfer again")
       setIsPending(false)
     }
