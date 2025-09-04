@@ -45,7 +45,9 @@ export const retrieveCustomer =
       // Handle expired/invalid tokens - just log and return null
       // Client-side components will handle token cleanup
       if (error?.status === 401 || error?.message?.includes('Unauthorized')) {
-        console.log("Customer authentication failed - expired token detected")
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Customer authentication failed - expired token detected")
+        }
         return null
       }
       
@@ -157,23 +159,32 @@ export async function transferCart() {
   const cartId = await getCartId()
 
   if (!cartId) {
-    console.log("No cart ID found for transfer")
+    if (process.env.NODE_ENV === 'development') {
+      console.log("No cart ID found for transfer")
+    }
     return
   }
 
   const headers = await getAuthHeaders()
   
   if (!headers) {
-    console.log("No auth headers found for cart transfer")
+    if (process.env.NODE_ENV === 'development') {
+      console.log("No auth headers found for cart transfer")
+    }
     throw new Error("Authentication required for cart transfer")
   }
 
   try {
-    console.log("Attempting to transfer cart:", cartId)
-    console.log("Auth headers present:", !!headers?.authorization)
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Attempting to transfer cart:", cartId)
+      console.log("Auth headers present:", !!headers?.authorization)
+    }
     
     await sdk.store.cart.transferCart(cartId, {}, headers)
-    console.log("Cart transfer successful")
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Cart transfer successful")
+    }
     
     const cartCacheTag = await getCacheTag("carts")
     revalidateTag(cartCacheTag)
@@ -182,7 +193,9 @@ export async function transferCart() {
     
     // Handle expired/invalid tokens by using Server Action for cleanup
     if (error?.status === 401 || error?.message?.includes('Unauthorized')) {
-      console.log("Cart transfer failed due to authentication - token expired")
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Cart transfer failed due to authentication - token expired")
+      }
       
       // Import and use the Server Action
       const { clearExpiredToken } = await import("../../app/actions/auth")

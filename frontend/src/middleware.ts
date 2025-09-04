@@ -107,6 +107,19 @@ export async function middleware(request: NextRequest) {
   let redirectUrl = request.nextUrl.href
 
   let response = NextResponse.redirect(redirectUrl, 307)
+  
+  // Add security headers for all requests
+  response.headers.set("X-Frame-Options", "DENY")
+  response.headers.set("X-Content-Type-Options", "nosniff")
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin")
+  
+  // Add CSP header for production
+  if (process.env.NODE_ENV === "production") {
+    response.headers.set(
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';"
+    )
+  }
 
   let cacheIdCookie = request.cookies.get("_medusa_cache_id")
 
@@ -119,9 +132,23 @@ export async function middleware(request: NextRequest) {
   const urlHasCountryCode =
     countryCode && request.nextUrl.pathname.split("/")[1].includes(countryCode)
 
-  // if one of the country codes is in the url and the cache id is set, return next
+  // if one of the country codes is in the url and the cache id is set, return next with security headers
   if (urlHasCountryCode && cacheIdCookie) {
-    return NextResponse.next()
+    const nextResponse = NextResponse.next()
+    
+    // Add security headers
+    nextResponse.headers.set("X-Frame-Options", "DENY")
+    nextResponse.headers.set("X-Content-Type-Options", "nosniff")
+    nextResponse.headers.set("Referrer-Policy", "strict-origin-when-cross-origin")
+    
+    if (process.env.NODE_ENV === "production") {
+      nextResponse.headers.set(
+        "Content-Security-Policy",
+        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';"
+      )
+    }
+    
+    return nextResponse
   }
 
   // if one of the country codes is in the url and the cache id is not set, set the cache id and redirect
@@ -135,7 +162,14 @@ export async function middleware(request: NextRequest) {
 
   // check if the url is a static asset
   if (request.nextUrl.pathname.includes(".")) {
-    return NextResponse.next()
+    const nextResponse = NextResponse.next()
+    
+    // Add security headers for static assets too
+    nextResponse.headers.set("X-Frame-Options", "DENY")
+    nextResponse.headers.set("X-Content-Type-Options", "nosniff")
+    nextResponse.headers.set("Referrer-Policy", "strict-origin-when-cross-origin")
+    
+    return nextResponse
   }
 
   const redirectPath =

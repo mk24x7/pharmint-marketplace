@@ -15,7 +15,9 @@ export async function clearExpiredToken() {
       revalidateTag(customerCacheTag)
     }
     
-    console.log("Expired token cleared successfully")
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Expired token cleared successfully")
+    }
     return { success: true }
   } catch (error) {
     console.error("Failed to clear expired token:", error)

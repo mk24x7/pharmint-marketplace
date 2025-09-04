@@ -25,7 +25,9 @@ function CartMismatchBanner(props: {
       setActionText("Transferring..")
 
       await transferCart()
-      console.log("Transfer completed from banner")
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Transfer completed from banner")
+      }
       // If successful, component should unmount
     } catch (error) {
       console.error("Transfer failed in banner:", error)
