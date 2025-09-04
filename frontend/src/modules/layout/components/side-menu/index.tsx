@@ -7,6 +7,7 @@ import { Fragment } from "react"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CountrySelect from "../country-select"
+import SearchBar from "../search-bar"
 import { HttpTypes } from "@medusajs/types"
 
 const SideMenuItems = {
@@ -53,6 +54,11 @@ const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
                       <button data-testid="close-menu-button" onClick={close} className="text-pharmint-muted hover:text-accent transition-colors">
                         <XMark />
                       </button>
+                    </div>
+                    
+                    {/* Mobile Search */}
+                    <div className="mb-6">
+                      <SearchBar />
                     </div>
                     <ul className="flex flex-col gap-6 items-start justify-start">
                       {Object.entries(SideMenuItems).map(([name, href]) => {

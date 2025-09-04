@@ -47,3 +47,27 @@ export const getCategoryByHandle = async (categoryHandle: string[]) => {
     )
     .then(({ product_categories }) => product_categories[0])
 }
+
+export const getCategoryIdByHandle = async (handle: string): Promise<string | null> => {
+  const next = {
+    ...(await getCacheOptions("categories")),
+  }
+
+  try {
+    const { product_categories } = await sdk.client.fetch<{
+      product_categories: HttpTypes.StoreProductCategory[]
+    }>(`/store/product-categories`, {
+      query: {
+        handle,
+        limit: 1,
+      },
+      next,
+      cache: "force-cache",
+    })
+
+    return product_categories[0]?.id || null
+  } catch (error) {
+    console.error("Category ID lookup error:", error)
+    return null
+  }
+}

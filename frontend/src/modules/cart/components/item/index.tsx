@@ -3,7 +3,6 @@
 import { Table, Text, clx } from "@medusajs/ui"
 import { updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
-import CartItemSelect from "@modules/cart/components/cart-item-select"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
@@ -12,7 +11,7 @@ import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Spinner from "@modules/common/icons/spinner"
 import Thumbnail from "@modules/products/components/thumbnail"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -23,6 +22,12 @@ type ItemProps = {
 const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [inputValue, setInputValue] = useState(item.quantity.toString())
+
+  // Sync input value when item quantity changes externally
+  useEffect(() => {
+    setInputValue(item.quantity.toString())
+  }, [item.quantity])
 
   const changeQuantity = async (quantity: number) => {
     setError(null)
@@ -40,9 +45,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
       })
   }
 
-  // TODO: Update this to grab the actual max inventory
-  const maxQtyFromInventory = 10
-  const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
+  // Accept any quantity - support backorders
 
   return (
     <Table.Row className="w-full border-b border-pharmint-border/50 hover:bg-background-secondary/30 transition-colors duration-200" data-testid="product-row">
@@ -76,28 +79,35 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         <Table.Cell>
           <div className="flex gap-2 items-center w-28">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
-            <CartItemSelect
-              value={item.quantity}
-              onChange={(value) => changeQuantity(parseInt(value.target.value))}
-              className="w-14 h-10 p-4"
-              data-testid="product-select-button"
-            >
-              {/* TODO: Update this with the v2 way of managing inventory */}
-              {Array.from(
-                {
-                  length: Math.min(maxQuantity, 10),
-                },
-                (_, i) => (
-                  <option value={i + 1} key={i}>
-                    {i + 1}
-                  </option>
-                )
-              )}
-
-              <option value={1} key={1}>
-                1
-              </option>
-            </CartItemSelect>
+            <input
+              type="number"
+              min="1"
+              value={inputValue}
+              onChange={(e) => {
+                // Allow any input during typing (including empty)
+                setInputValue(e.target.value)
+              }}
+              onBlur={(e) => {
+                const value = parseInt(e.target.value)
+                // Validate and update cart only on blur
+                if (isNaN(value) || value < 1) {
+                  const fallbackQuantity = 1
+                  setInputValue(fallbackQuantity.toString())
+                  changeQuantity(fallbackQuantity)
+                } else if (value !== item.quantity) {
+                  changeQuantity(value)
+                }
+              }}
+              onKeyDown={(e) => {
+                // Allow Enter key to trigger blur (update cart)
+                if (e.key === 'Enter') {
+                  e.currentTarget.blur()
+                }
+              }}
+              disabled={updating}
+              className="w-14 h-10 text-center bg-background-secondary/30 border border-pharmint-border rounded text-pharmint-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              data-testid="product-quantity-input"
+            />
             {updating && <Spinner />}
           </div>
           <ErrorMessage error={error} data-testid="product-error-message" />
