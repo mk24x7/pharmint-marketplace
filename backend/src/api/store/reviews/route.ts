@@ -21,17 +21,6 @@ export const GET = async (
     },
   } = await query.graph({
     entity: "review",
-    fields: [
-      "id",
-      "title", 
-      "content",
-      "rating",
-      "status",
-      "product_id",
-      "customer_id",
-      "created_at",
-      "updated_at"
-    ],
     filters: {
       ...req.filterableFields,
       status: req.filterableFields?.status || "approved"

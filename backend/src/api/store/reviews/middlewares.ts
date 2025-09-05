@@ -7,11 +7,11 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework";
 import { MiddlewareRoute } from "@medusajs/medusa";
-import { StoreCreateReview, StoreGetReviews } from "./validators";
+import { StoreCreateReview, StoreGetReviews, StoreCreateReviewReq } from "./validators";
 
 // Middleware to ensure user has purchased the product
 const ensurePurchaseVerification = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<StoreCreateReviewReq>,
   res: MedusaResponse,
   next: MedusaNextFunction
 ) => {
@@ -87,7 +87,7 @@ export const storeReviewsMiddlewares: MiddlewareRoute[] = [
     method: ["GET"],
     matcher: "/store/reviews",
     middlewares: [
-      validateAndTransformQuery(StoreGetReviews),
+      validateAndTransformQuery(StoreGetReviews, {}),
     ],
   },
   {

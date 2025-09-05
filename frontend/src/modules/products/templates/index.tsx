@@ -16,12 +16,14 @@ type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
   region: HttpTypes.StoreRegion
   countryCode: string
+  customer?: HttpTypes.StoreCustomer | null
 }
 
 const ProductTemplate: React.FC<ProductTemplateProps> = ({
   product,
   region,
   countryCode,
+  customer,
 }) => {
   if (!product || !product.id) {
     return notFound()
@@ -82,7 +84,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         }>
           <ReviewSection
             product={product}
-            customer={null} // TODO: Get customer from context/session
+            customer={customer}
             countryCode={countryCode}
           />
         </Suspense>
