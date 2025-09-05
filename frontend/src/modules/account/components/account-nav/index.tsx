@@ -96,7 +96,7 @@ const AccountNav = ({
                     data-testid="reviews-link"
                   >
                     <div className="flex items-center gap-x-2">
-                      <Star size={20} />
+                      <Star className="w-5 h-5" />
                       <span>Reviews</span>
                     </div>
                     <ChevronDown className="transform -rotate-90" />
