@@ -1,1 +1,2 @@
 - always use the correct database while developing locally psql (17.6 (Postgres.app)). ask about dependencies before installing anything randomly
+- properly maintain repository, always do sanity checks and never force merge branches
