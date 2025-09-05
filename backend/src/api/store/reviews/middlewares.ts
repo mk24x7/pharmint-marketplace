@@ -8,6 +8,7 @@ import {
 } from "@medusajs/framework";
 import { MiddlewareRoute } from "@medusajs/medusa";
 import { StoreCreateReview, StoreGetReviews, StoreCreateReviewReq } from "./validators";
+import { reviewSubmissionLimiter, reviewReadLimiter } from "../../../utils/rate-limiter";
 
 // Middleware to ensure user has purchased the product
 const ensurePurchaseVerification = async (
@@ -73,6 +74,7 @@ export const storeReviewsMiddlewares: MiddlewareRoute[] = [
     method: ["POST"],
     matcher: "/store/reviews*",
     middlewares: [
+      reviewSubmissionLimiter.middleware(),
       authenticate("customer", ["session", "bearer"]),
     ],
   },
@@ -80,6 +82,7 @@ export const storeReviewsMiddlewares: MiddlewareRoute[] = [
     method: ["POST"],
     matcher: "/store/products/*/reviews*",
     middlewares: [
+      reviewSubmissionLimiter.middleware(),
       authenticate("customer", ["session", "bearer"]),
     ],
   },
@@ -87,7 +90,15 @@ export const storeReviewsMiddlewares: MiddlewareRoute[] = [
     method: ["GET"],
     matcher: "/store/reviews",
     middlewares: [
+      reviewReadLimiter.middleware(),
       validateAndTransformQuery(StoreGetReviews, {}),
+    ],
+  },
+  {
+    method: ["GET"],
+    matcher: "/store/products/*/reviews*",
+    middlewares: [
+      reviewReadLimiter.middleware(),
     ],
   },
   {

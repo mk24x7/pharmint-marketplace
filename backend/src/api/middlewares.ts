@@ -7,10 +7,12 @@ import { defineMiddlewares } from "@medusajs/medusa";
 import { adminMiddlewares } from "./admin/middlewares";
 import { storeMiddlewares } from "./store/middlewares";
 import { storeReviewsMiddlewares } from "./store/reviews/middlewares";
+import { adminReviewsMiddlewares } from "./admin/reviews/middlewares";
 
 export default defineMiddlewares({
   routes: [
     ...adminMiddlewares,
+    ...adminReviewsMiddlewares,
     ...storeMiddlewares,
     ...storeReviewsMiddlewares,
     {
