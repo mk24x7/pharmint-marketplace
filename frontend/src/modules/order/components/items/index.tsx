@@ -29,6 +29,7 @@ const Items = ({ order }: ItemsProps) => {
                       key={item.id}
                       item={item}
                       currencyCode={order.currency_code}
+                      orderStatus={order.fulfillment_status}
                     />
                   )
                 })

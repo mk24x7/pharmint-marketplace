@@ -3,6 +3,7 @@ import { useMemo } from "react"
 
 import Thumbnail from "@modules/products/components/thumbnail"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import OrderReviewButton from "@modules/account/components/order-review-button"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 
@@ -73,12 +74,20 @@ const OrderCard = ({ order }: OrderCardProps) => {
           </div>
         )}
       </div>
-      <div className="flex justify-end">
+      <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
         <LocalizedClientLink href={`/account/orders/details/${order.id}`}>
-          <Button data-testid="order-details-link" variant="secondary">
+          <Button 
+            data-testid="order-details-link" 
+            variant="secondary"
+            className="w-full sm:w-auto min-w-[120px]"
+          >
             See details
           </Button>
         </LocalizedClientLink>
+        <OrderReviewButton 
+          order={order} 
+          className="w-full sm:w-auto"
+        />
       </div>
     </div>
   )
