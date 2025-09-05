@@ -5,6 +5,7 @@ import ProductActions from "@modules/products/components/product-actions"
 import ProductOnboardingCta from "@modules/products/components/product-onboarding-cta"
 import ProductTabs from "@modules/products/components/product-tabs"
 import RelatedProducts from "@modules/products/components/related-products"
+import ReviewSection from "@modules/products/components/reviews"
 import ProductInfo from "@modules/products/templates/product-info"
 import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-related-products"
 import { notFound } from "next/navigation"
@@ -59,6 +60,32 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
             </Suspense>
           </div>
         </div>
+      </div>
+      <div
+        className="content-container my-16 small:my-32"
+        data-testid="reviews-container"
+      >
+        <Suspense fallback={
+          <div className="bg-background-secondary/50 backdrop-blur-sm border border-pharmint-border rounded-xl p-6 animate-pulse">
+            <div className="h-8 bg-ui-border-base rounded w-48 mb-6" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <div className="h-6 bg-ui-border-base rounded w-32" />
+                <div className="h-4 bg-ui-border-base rounded w-24" />
+              </div>
+              <div className="space-y-4">
+                <div className="h-6 bg-ui-border-base rounded w-40" />
+                <div className="h-10 bg-ui-border-base rounded" />
+              </div>
+            </div>
+          </div>
+        }>
+          <ReviewSection
+            product={product}
+            customer={null} // TODO: Get customer from context/session
+            countryCode={countryCode}
+          />
+        </Suspense>
       </div>
       <div
         className="content-container my-16 small:my-32"

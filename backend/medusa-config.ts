@@ -1,6 +1,7 @@
 import { QUOTE_MODULE } from "./src/modules/quote";
 import { APPROVAL_MODULE } from "./src/modules/approval";
 import { COMPANY_MODULE } from "./src/modules/company";
+import { PRODUCT_REVIEW_MODULE } from "./src/modules/product-review";
 import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
@@ -25,6 +26,9 @@ module.exports = defineConfig({
     },
     [APPROVAL_MODULE]: {
       resolve: "./modules/approval",
+    },
+    [PRODUCT_REVIEW_MODULE]: {
+      resolve: "./modules/product-review",
     },
     [Modules.CACHE]: {
       resolve: "@medusajs/medusa/cache-inmemory",
