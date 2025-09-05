@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@medusajs/ui"
 import { HttpTypes } from "@medusajs/types"
-import { Star, Check, Clock, X } from "lucide-react"
+import { Star, Check, Clock, XMark } from "@medusajs/icons"
 import { canReviewProduct } from "@lib/util/review-helpers"
 import { retrieveCustomer } from "@lib/data/customer"
 import SingleItemReviewModal from "../single-item-review-modal"
@@ -101,7 +101,7 @@ const ItemReviewAction = ({ orderItem, orderStatus, className = "" }: ItemReview
       case 'loading':
         return (
           <div className="flex items-center gap-2 text-gray-400">
-            <Clock size={16} />
+            <Clock className="w-4 h-4" />
             <span className="text-xs">Loading...</span>
           </div>
         )
@@ -113,7 +113,7 @@ const ItemReviewAction = ({ orderItem, orderStatus, className = "" }: ItemReview
             size="small"
             className="flex items-center gap-2 bg-accent hover:bg-accent-hover text-white text-xs px-3 py-1.5"
           >
-            <Star size={14} />
+            <Star className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Review Product</span>
             <span className="sm:hidden">Review</span>
           </Button>
@@ -125,7 +125,7 @@ const ItemReviewAction = ({ orderItem, orderStatus, className = "" }: ItemReview
             onClick={handleReviewClick}
             className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
           >
-            <Check size={16} />
+            <Check className="w-4 h-4" />
             <span className="text-xs font-medium">
               <span className="hidden sm:inline">Reviewed</span>
               <span className="sm:hidden">✓</span>
@@ -136,7 +136,7 @@ const ItemReviewAction = ({ orderItem, orderStatus, className = "" }: ItemReview
       case 'not-eligible':
         return (
           <div className="flex items-center gap-2 text-gray-400">
-            <Clock size={16} />
+            <Clock className="w-4 h-4" />
             <span className="text-xs">
               <span className="hidden sm:inline">Pending</span>
               <span className="sm:hidden">⏳</span>
@@ -147,7 +147,7 @@ const ItemReviewAction = ({ orderItem, orderStatus, className = "" }: ItemReview
       case 'error':
         return (
           <div className="flex items-center gap-2 text-red-400">
-            <X size={16} />
+            <XMark className="w-4 h-4" />
             <span className="text-xs">Error</span>
           </div>
         )
