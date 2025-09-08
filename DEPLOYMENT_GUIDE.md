@@ -60,6 +60,11 @@ MEDUSA_BACKEND_URL=https://api.pharmint.ph
 BACKEND_URL=https://api.pharmint.ph
 MEDUSA_ADMIN_BACKEND_URL=https://api.pharmint.ph
 
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=465185164183-fohod7v3s4l1cpgssfms6ahkq6di5pke.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_CALLBACK_URL=https://pharmint.ph/ph/login/callback/google
+
 # Install dependencies and build
 yarn install
 yarn build
@@ -503,12 +508,45 @@ pm2 status
 - **Password:** AqSA5dvbsPYm
 - **Admin URL:** https://admin.pharmint.ph/app
 
+## Google OAuth Configuration
+
+### Production Setup Required
+
+**1. Google Cloud Console Configuration:**
+- **Project:** Use existing Google Cloud project
+- **OAuth 2.0 Client IDs:** Update authorized redirect URIs
+- **Development:** `http://localhost:8000/ph/login/callback/google`
+- **Production:** `https://pharmint.ph/ph/login/callback/google`
+
+**2. Backend Environment Variables (.env):**
+```env
+# Add to backend production environment
+GOOGLE_CLIENT_ID=465185164183-fohod7v3s4l1cpgssfms6ahkq6di5pke.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_CALLBACK_URL=https://pharmint.ph/ph/login/callback/google
+```
+
+**3. Frontend Implementation:**
+- Google OAuth buttons implemented in login/register components
+- Callback page: `/ph/login/callback/google` 
+- Uses Medusa SDK for proper authentication flow
+
+**4. OAuth Flow:**
+1. User clicks "Continue with Google" → Frontend calls Medusa SDK
+2. Backend redirects to Google OAuth → User authenticates with Google
+3. Google redirects to production: `https://pharmint.ph/ph/login/callback/google`
+4. Callback page processes tokens → User redirected to account dashboard
+
+### ⚠️ Critical Note:
+The `/ph/` path segment is required because the frontend uses `[countryCode]` dynamic routing. All OAuth callbacks must include the country code path.
+
 ## Production URLs
 
 - **Storefront:** https://pharmint.ph
 - **Admin Panel:** https://admin.pharmint.ph/app  
 - **API Endpoint:** https://api.pharmint.ph
 - **Health Check:** https://api.pharmint.ph/health
+- **Google OAuth Callback:** https://pharmint.ph/ph/login/callback/google
 
 ---
 
