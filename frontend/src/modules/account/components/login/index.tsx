@@ -14,15 +14,27 @@ const Login = ({ setCurrentView }: Props) => {
 
   return (
     <div
-      className="max-w-sm w-full flex flex-col items-center bg-background-secondary/30 backdrop-blur-sm border border-pharmint-border rounded-xl p-8"
+      className="max-w-sm w-full h-full flex flex-col justify-center gap-6 my-auto"
       data-testid="login-page"
     >
-      <h1 className="text-large-semi uppercase mb-6 text-pharmint-white">Welcome back to Pharmint.PH</h1>
-      <p className="text-center text-base-regular text-pharmint-muted mb-8">
-        Sign in to access your account and manage your pharmaceutical orders.
-      </p>
+      <div className="mb-2">
+        <h1 
+          className="text-4xl small:text-5xl font-bold text-pharmint-white text-left leading-tight mb-2"
+          style={{
+            background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.9) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}
+        >
+          Welcome back
+        </h1>
+        <p className="text-lg text-accent font-medium">
+          Sign in to your Pharmint account
+        </p>
+      </div>
       <form className="w-full" action={formAction}>
-        <div className="flex flex-col w-full gap-y-2">
+        <div className="flex flex-col w-full gap-y-4">
           <Input
             label="Email"
             name="email"
@@ -40,23 +52,26 @@ const Login = ({ setCurrentView }: Props) => {
             required
             data-testid="password-input"
           />
+          <div className="flex flex-col gap-2 w-full border-b border-pharmint-border my-6" />
         </div>
         <ErrorMessage error={message} data-testid="login-error-message" />
-        <SubmitButton data-testid="sign-in-button" className="w-full mt-6">
-          Sign in
-        </SubmitButton>
+        <div className="flex flex-col gap-3 mt-8">
+          <SubmitButton 
+            data-testid="sign-in-button" 
+            className="w-full h-12 bg-accent hover:bg-accent-hover text-pharmint-white font-semibold transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
+          >
+            Sign In
+          </SubmitButton>
+          <button
+            type="button"
+            onClick={() => setCurrentView(LOGIN_VIEW.REGISTER)}
+            className="w-full h-12 border border-pharmint-border bg-background-secondary text-pharmint-white hover:bg-pharmint-border/20 font-semibold transition-all duration-200 rounded-base"
+            data-testid="register-button"
+          >
+            Create New Account
+          </button>
+        </div>
       </form>
-      <span className="text-center text-pharmint-muted text-small-regular mt-6">
-        Not a member?{" "}
-        <button
-          onClick={() => setCurrentView(LOGIN_VIEW.REGISTER)}
-          className="text-accent hover:text-accent-hover underline transition-colors duration-200"
-          data-testid="register-button"
-        >
-          Join us
-        </button>
-        .
-      </span>
     </div>
   )
 }
