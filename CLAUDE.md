@@ -135,6 +135,12 @@ You: "I'll implement this using [approach] because [reasoning from docs]. The so
 - Test migrations locally before suggesting them
 - Use standard SQL where possible for better portability
 
+### Repository Management
+- Properly maintain repository, always do sanity checks and never force merge branches
+- Follow proper git workflows with meaningful commit messages
+- Always test changes before committing
+- Use pull requests for code review and collaboration
+
 ---
 
 # Agent Selection Quick Reference
@@ -173,3 +179,8 @@ You: "I'll implement this using [approach] because [reasoning from docs]. The so
 - Consider the full-stack implications of changes
 - Maintain consistency between frontend and backend implementations
 - Adhere to the senior engineer principles defined in the system prompt above
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
