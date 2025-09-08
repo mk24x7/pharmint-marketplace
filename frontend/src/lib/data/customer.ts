@@ -73,6 +73,13 @@ export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
 
 export async function signup(_currentState: unknown, formData: FormData) {
   const password = formData.get("password") as string
+  const termsAccepted = formData.get("terms") === "on" || formData.get("terms") === "true"
+  
+  // Server-side validation
+  if (!termsAccepted) {
+    return "You must accept the terms and conditions to create an account."
+  }
+  
   const customerForm = {
     email: formData.get("email") as string,
     first_name: formData.get("first_name") as string,
