@@ -219,26 +219,29 @@ const QuoteDetails: React.FC<QuoteDetailsProps> = ({
               </span>
               <span className="text-xl text-accent font-bold">
                 {convertToLocale({
-                  amount: preview.total / 100,
+                  amount: (preview.summary?.current_order_total || preview.total) / 100,
                   currency_code: order.currency_code
                 })}
               </span>
             </div>
 
-            {order.total !== preview.total && (
-              <div className="flex items-center justify-between bg-background-secondary/30 rounded-lg p-3">
-                <span className="text-sm text-pharmint-muted">
-                  Savings
-                </span>
-                <span className="text-sm text-green-400 font-medium">
-                  {order.total > preview.total ? '+' : '-'}
-                  {convertToLocale({
-                    amount: Math.abs(order.total - preview.total) / 100,
-                    currency_code: order.currency_code
-                  })}
-                </span>
-              </div>
-            )}
+            {(() => {
+              const quoteTotal = preview.summary?.current_order_total || preview.total;
+              return order.total !== quoteTotal && (
+                <div className="flex items-center justify-between bg-background-secondary/30 rounded-lg p-3">
+                  <span className="text-sm text-pharmint-muted">
+                    Savings
+                  </span>
+                  <span className="text-sm text-green-400 font-medium">
+                    {order.total > quoteTotal ? '+' : '-'}
+                    {convertToLocale({
+                      amount: Math.abs(order.total - quoteTotal) / 100,
+                      currency_code: order.currency_code
+                    })}
+                  </span>
+                </div>
+              )
+            })()}
           </div>
         </Container>
 

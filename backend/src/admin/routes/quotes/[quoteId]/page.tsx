@@ -53,7 +53,7 @@ const QuoteDetails = () => {
     useRejectQuote(quoteId!);
 
   useEffect(() => {
-    if (["pending_merchant", "customer_rejected"].includes(quote?.status!)) {
+    if (["pending_merchant", "customer_rejected", "pending_customer"].includes(quote?.status!)) {
       setShowSendQuote(true);
     } else {
       setShowSendQuote(false);
@@ -71,10 +71,12 @@ const QuoteDetails = () => {
   }, [quote]);
 
   const handleSendQuote = async () => {
+    const isUpdate = quote?.status === "pending_customer";
     const res = await prompt({
-      title: "Send quote?",
-      description:
-        "You are about to send this quote to the customer. Do you want to continue?",
+      title: isUpdate ? "Send updated quote?" : "Send quote?",
+      description: isUpdate
+        ? "You are about to send an updated version of this quote to the customer. This will notify them of the changes. Do you want to continue?"
+        : "You are about to send this quote to the customer. Do you want to continue?",
       confirmText: t("actions.continue"),
       cancelText: t("actions.cancel"),
       variant: "confirmation",
@@ -84,7 +86,7 @@ const QuoteDetails = () => {
       await sendQuote(
         {},
         {
-          onSuccess: () => toast.success("Successfully sent quote to customer"),
+          onSuccess: () => toast.success(isUpdate ? "Successfully sent updated quote to customer" : "Successfully sent quote to customer"),
           onError: (e) => toast.error(e.message),
         }
       );
@@ -170,7 +172,7 @@ const QuoteDetails = () => {
                     onClick={() => handleSendQuote()}
                     disabled={isSendingQuote}
                   >
-                    Send Quote
+                    {quote?.status === "pending_customer" ? "Send Updated Quote" : "Send Quote"}
                   </Button>
                 )}
               </div>

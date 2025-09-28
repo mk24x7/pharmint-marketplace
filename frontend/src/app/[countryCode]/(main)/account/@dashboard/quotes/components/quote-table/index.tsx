@@ -66,7 +66,7 @@ export const QuoteTableItem = ({
               className="text-sm text-right justify-end items-end"
               currencyCode={currencyCode}
               amount={item.unit_price}
-              originalAmount={originalItem?.unit_price}
+              originalAmount={isAddedItem ? item.unit_price : originalItem?.unit_price}
             />
 
             {isAddedItem && (
@@ -102,8 +102,8 @@ export const QuoteTableItem = ({
             <AmountCell
               className="text-sm text-right justify-end items-end"
               currencyCode={currencyCode}
-              amount={item.total}
-              originalAmount={originalItem?.total}
+              amount={isAddedItem ? item.detail.quantity * item.unit_price : item.total}
+              originalAmount={isAddedItem ? item?.total : originalItem?.total}
             />
           </div>
         </div>

@@ -35,6 +35,7 @@ export const QuoteDetailsHeader = ({
                   "pending_merchant",
                   "customer_rejected",
                   "merchant_rejected",
+                  "pending_customer",
                 ].includes(quote.status)
               }
             >
