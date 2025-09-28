@@ -229,7 +229,8 @@ const AccountNavLink = ({
 }: AccountNavLinkProps) => {
   const { countryCode }: { countryCode: string } = useParams()
 
-  const active = route.split(countryCode)[1] === href
+  const routePath = route.split(countryCode)[1]
+  const active = routePath === href || (href === "/account/quotes" && routePath.startsWith("/account/quotes"))
   return (
     <LocalizedClientLink
       href={href}

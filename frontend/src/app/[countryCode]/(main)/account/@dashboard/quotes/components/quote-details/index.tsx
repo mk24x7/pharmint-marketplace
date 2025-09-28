@@ -40,178 +40,248 @@ const QuoteDetails: React.FC<QuoteDetailsProps> = ({
   const [isRejecting, setIsRejecting] = useState(false)
 
   return (
-    <div className="flex flex-col gap-y-2 p-0">
-      <div className="flex gap-2 justify-between items-center mb-2">
+    <div className="flex flex-col gap-y-6 p-0">
+      <div className="flex gap-2 justify-between items-center mb-6">
         <LocalizedClientLink
           href="/account/quotes"
-          className="flex gap-2 items-center text-ui-fg-subtle hover:text-ui-fg-base"
+          className="flex gap-2 items-center text-pharmint-muted hover:text-accent transition-colors duration-200"
           data-testid="back-to-overview-button"
         >
-          <Button variant="secondary">
-            <ArrowUturnLeft /> Back
-          </Button>
+          <ArrowUturnLeft size={16} />
+          <span className="text-sm">Back to Quotes</span>
         </LocalizedClientLink>
       </div>
 
-      <div className="small:grid small:grid-cols-6 flex flex-col-reverse small:gap-4 gap-2">
-        <div className="small:col-span-4 flex flex-col gap-y-2">
-          {quote.status === "accepted" && (
-            <Container className="p-0">
-              <div className="flex items-center justify-between px-6 py-4">
-                <Text className="txt-compact-small">
-                  <CheckCircleSolid className="inline-block mr-2 text-green-500 text-lg" />
-                  Quote accepted by customer. Order is ready for processing.
-                </Text>
+      {/* Single Column Layout */}
+      <div className="flex flex-col gap-y-6">
+        {quote.status === "accepted" && (
+          <Container className="bg-background-secondary/50 backdrop-blur-sm border border-pharmint-border rounded-xl p-6">
+            <div className="flex items-center justify-between">
+              <Text className="text-pharmint-white text-sm">
+                <CheckCircleSolid className="inline-block mr-2 text-green-400 text-lg" />
+                Quote accepted by customer. Order is ready for processing.
+              </Text>
 
-                <Button
-                  size="small"
-                  onClick={() =>
-                    router.push(
-                      `/${countryCode}/account/orders/details/${quote.draft_order_id}`
-                    )
-                  }
-                >
-                  View Order
-                </Button>
-              </div>
-            </Container>
-          )}
-
-          {preview.items?.map((item) => (
-            <Container key={item.id}>
-              <QuoteTableItem
-                key={item.id}
-                item={item}
-                originalItem={originalItemsMap.get(item.id)}
-                currencyCode={order.currency_code}
-              />
-            </Container>
-          ))}
-
-          <Container className="p-0">
-            <div className="py-4">
-              <div className="flex items-center justify-between mb-2 px-6">
-                <span className="txt-small text-ui-fg-subtle font-semibold">
-                  Current Total
-                </span>
-
-                <span className="txt-small text-ui-fg-subtle">
-                  {convertToLocale({
-                    amount: order.total / 100,
-                    currency_code: order.currency_code
-                  })}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between px-6">
-                <span className="txt-small text-ui-fg-subtle font-semibold">
-                  New Total
-                </span>
-
-                <span className="txt-small text-ui-fg-subtle">
-                  {convertToLocale({
-                    amount: preview.total / 100,
-                    currency_code: order.currency_code
-                  })}
-                </span>
-              </div>
+              <Button
+                size="small"
+                onClick={() =>
+                  router.push(
+                    `/${countryCode}/account/orders/details/${quote.draft_order_id}`
+                  )
+                }
+                className="bg-accent hover:bg-accent-hover text-white"
+              >
+                View Order
+              </Button>
             </div>
           </Container>
+        )}
 
-          {quote.status === "pending_customer" && (
-            <div className="flex gap-x-3 justify-end my-4">
-              <PromptModal
-                title="Reject Quote?"
-                description="Are you sure you want to reject quote? This action is irreversible."
-                handleAction={() => {
-                  setIsRejecting(true)
-
-                  rejectQuote(quote.id)
-                    .catch((e) => toast.error(e.message))
-                    .finally(() => setIsRejecting(false))
-                }}
-                isLoading={isRejecting}
-              >
-                <Button size="small" variant="secondary">
-                  Reject Quote
-                </Button>
-              </PromptModal>
-
-              <PromptModal
-                title="Accept Quote?"
-                description="Are you sure you want to accept quote? This action is irreversible."
-                handleAction={() => {
-                  setIsAccepting(true)
-
-                  acceptQuote(quote.id)
-                    .catch((e) => toast.error(e.message))
-                    .finally(() => setIsAccepting(false))
-                }}
-                isLoading={isAccepting}
-              >
-                <Button size="small" variant="primary">
-                  Accept Quote
-                </Button>
-              </PromptModal>
+        {/* 1. Quote ID and Status Card */}
+        <Container className="bg-background-secondary/50 backdrop-blur-sm border border-pharmint-border rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <div>
+                <span className="text-sm text-pharmint-muted font-medium">Quote ID</span>
+                <div className="text-xl font-bold text-pharmint-white">#{quote.draft_order.display_id}</div>
+              </div>
+              <div>
+                <span className="text-sm text-pharmint-muted font-medium">Created</span>
+                <div className="text-sm text-pharmint-white">
+                  {(() => {
+                    try {
+                      const dateValue = quote.created_at || quote.draft_order?.created_at || new Date();
+                      const date = new Date(dateValue);
+                      if (isNaN(date.getTime())) {
+                        return "Date not available";
+                      }
+                      return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      });
+                    } catch {
+                      return "Date not available";
+                    }
+                  })()}
+                </div>
+              </div>
             </div>
-          )}
-
-          <QuoteMessages quote={quote} preview={preview} />
-        </div>
-
-        <div className="col-span-2 flex flex-col gap-y-2">
-          <Container className="flex gap-x-3 justify-between">
-            <div className="text-sm">
-              <span className="font-semibold text-ui-fg-subtle">Quote ID:</span>{" "}
-              #<span>{quote.draft_order.display_id}</span>
-            </div>
-
             <QuoteStatusBadge status={quote.status} />
-          </Container>
+          </div>
+        </Container>
 
-          <Container>
-            <Heading level="h3" className="mb-2">
-              Customer
+        {/* 2. Customer Information Card with Edit Option */}
+        <Container className="bg-background-secondary/50 backdrop-blur-sm border border-pharmint-border rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <Heading level="h4" className="text-pharmint-white">
+              Customer Information
             </Heading>
+            <LocalizedClientLink href="/account/profile">
+              <Button
+                size="small"
+                variant="secondary"
+                className="bg-background-secondary/50 border border-pharmint-border text-pharmint-white hover:bg-background-secondary/70 hover:text-accent transition-all duration-200"
+              >
+                Edit Profile
+              </Button>
+            </LocalizedClientLink>
+          </div>
 
-            <div className="text-sm text-ui-fg-subtle">
-              <div className="flex justify-between">
-                <Text>Email</Text>
-                <Text>{quote.customer?.email || "-"}</Text>
-              </div>
-
-              <div className="flex justify-between">
-                <Text>Phone</Text>
-                <Text>{quote.customer?.phone || "-"}</Text>
-              </div>
-
-              <div className="flex justify-between">
-                <Text>Spend Limit</Text>
-                <Text>
-                  {(quote.customer?.employee?.spending_limit &&
-                    convertToLocale({
-                      amount: (quote.customer?.employee?.spending_limit || 0) / 100,
-                      currency_code: order.currency_code
-                    })) ||
-                    "-"}
-                </Text>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div>
+              <span className="text-sm text-pharmint-muted font-medium block">Full Name</span>
+              <span className="text-sm text-pharmint-white">
+                {quote.customer?.first_name && quote.customer?.last_name
+                  ? `${quote.customer.first_name} ${quote.customer.last_name}`
+                  : quote.customer?.first_name || quote.customer?.last_name || "-"}
+              </span>
             </div>
-          </Container>
 
-          <Container>
-            <Heading level="h3" className="mb-2">
-              Company
-            </Heading>
-
-            <div className="text-sm text-ui-fg-subtle">
-              <div className="flex justify-between">
-                <Text>Name</Text>
-                <Text>{quote.customer?.employee?.company?.name || "-"}</Text>
-              </div>
+            <div>
+              <span className="text-sm text-pharmint-muted font-medium block">Email</span>
+              <span className="text-sm text-pharmint-white break-all">{quote.customer?.email || "-"}</span>
             </div>
-          </Container>
+
+            <div>
+              <span className="text-sm text-pharmint-muted font-medium block">Phone</span>
+              <span className="text-sm text-pharmint-white">{quote.customer?.phone || "-"}</span>
+            </div>
+
+            {quote.customer?.employee?.spending_limit && (
+              <div>
+                <span className="text-sm text-pharmint-muted font-medium block">Spending Limit</span>
+                <span className="text-sm text-accent font-medium">
+                  {convertToLocale({
+                    amount: quote.customer.employee.spending_limit / 100,
+                    currency_code: order.currency_code
+                  })}
+                </span>
+              </div>
+            )}
+
+            {quote.customer?.employee?.company && (
+              <>
+                <div>
+                  <span className="text-sm text-pharmint-muted font-medium block">Company</span>
+                  <span className="text-sm text-pharmint-white font-medium">
+                    {quote.customer.employee.company.name}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-sm text-pharmint-muted font-medium block">Role</span>
+                  <span className="text-sm text-pharmint-white">
+                    {quote.customer.employee.is_admin ? "Administrator" : "Employee"}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        </Container>
+
+        {/* 3. Quote Items */}
+        <div>
+          <Heading level="h4" className="text-pharmint-white mb-4">Quote Items</Heading>
+          <div className="space-y-4">
+            {preview.items?.map((item) => (
+              <Container key={item.id} className="bg-background-secondary/50 backdrop-blur-sm border border-pharmint-border rounded-xl p-6">
+                <QuoteTableItem
+                  key={item.id}
+                  item={item}
+                  originalItem={originalItemsMap.get(item.id)}
+                  currencyCode={order.currency_code}
+                />
+              </Container>
+            ))}
+          </div>
         </div>
+
+        {/* 4. Quote Summary */}
+        <Container className="bg-background-secondary/50 backdrop-blur-sm border border-pharmint-border rounded-xl p-6">
+          <Heading level="h4" className="text-pharmint-white mb-4">Quote Summary</Heading>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-pharmint-muted font-medium">
+                Original Total
+              </span>
+              <span className="text-base text-pharmint-white font-medium">
+                {convertToLocale({
+                  amount: order.total / 100,
+                  currency_code: order.currency_code
+                })}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-pharmint-border pt-4">
+              <span className="text-base text-pharmint-white font-semibold">
+                Quote Total
+              </span>
+              <span className="text-xl text-accent font-bold">
+                {convertToLocale({
+                  amount: preview.total / 100,
+                  currency_code: order.currency_code
+                })}
+              </span>
+            </div>
+
+            {order.total !== preview.total && (
+              <div className="flex items-center justify-between bg-background-secondary/30 rounded-lg p-3">
+                <span className="text-sm text-pharmint-muted">
+                  Savings
+                </span>
+                <span className="text-sm text-green-400 font-medium">
+                  {order.total > preview.total ? '+' : '-'}
+                  {convertToLocale({
+                    amount: Math.abs(order.total - preview.total) / 100,
+                    currency_code: order.currency_code
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
+        </Container>
+
+        {quote.status === "pending_customer" && (
+          <div className="flex gap-x-3 justify-end my-4">
+            <PromptModal
+              title="Reject Quote?"
+              description="Are you sure you want to reject quote? This action is irreversible."
+              handleAction={() => {
+                setIsRejecting(true)
+
+                rejectQuote(quote.id)
+                  .catch((e) => toast.error(e.message))
+                  .finally(() => setIsRejecting(false))
+              }}
+              isLoading={isRejecting}
+            >
+              <Button size="small" variant="secondary">
+                Reject Quote
+              </Button>
+            </PromptModal>
+
+            <PromptModal
+              title="Accept Quote?"
+              description="Are you sure you want to accept quote? This action is irreversible."
+              handleAction={() => {
+                setIsAccepting(true)
+
+                acceptQuote(quote.id)
+                  .catch((e) => toast.error(e.message))
+                  .finally(() => setIsAccepting(false))
+              }}
+              isLoading={isAccepting}
+            >
+              <Button size="small" variant="primary">
+                Accept Quote
+              </Button>
+            </PromptModal>
+          </div>
+        )}
+
+        {/* 5. Messages Module */}
+        <QuoteMessages quote={quote} preview={preview} />
       </div>
     </div>
   )

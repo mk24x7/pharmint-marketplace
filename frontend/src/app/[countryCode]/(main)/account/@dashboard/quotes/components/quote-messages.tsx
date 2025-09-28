@@ -63,9 +63,9 @@ const QuoteMessages = ({
   }, [preview])
 
   return (
-    <Container className="divide-y divide-dashed p-0 ">
+    <Container className="bg-background-secondary/50 backdrop-blur-sm border border-pharmint-border rounded-xl divide-y divide-pharmint-border p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h3">Messages</Heading>
+        <Heading level="h3" className="text-pharmint-white">Messages</Heading>
       </div>
 
       <div>
@@ -73,10 +73,10 @@ const QuoteMessages = ({
           <div
             key={message.id}
             className={clx("px-6 py-4 text-sm flex flex-col gap-y-2", {
-              "!bg-ui-bg-subtle !inset-x-5 !inset-y-3": !!message.customer_id,
+              "bg-background-secondary/30 mx-5 my-3 rounded-lg": !!message.customer_id,
             })}
           >
-            <div className="font-medium font-sans txt-compact-small text-ui-fg-subtle ">
+            <div className="font-medium font-sans text-sm text-pharmint-muted">
               {!!message.admin &&
                 `${message.admin.first_name} ${message.admin.last_name}`}
 
@@ -85,7 +85,7 @@ const QuoteMessages = ({
             </div>
 
             {!!message.item_id && (
-              <div className="border border-dashed border-neutral-400 rounded-md my-2 px-4 py-2">
+              <div className="border border-dashed border-pharmint-border rounded-md my-2 px-4 py-2">
                 <QuoteTableItem
                   key={message.item_id}
                   item={previewItemsMap.get(message.item_id)!}
@@ -95,7 +95,7 @@ const QuoteMessages = ({
               </div>
             )}
 
-            <div>{message.text}</div>
+            <div className="text-pharmint-white">{message.text}</div>
           </div>
         ))}
       </div>
@@ -105,55 +105,73 @@ const QuoteMessages = ({
           onSubmit={handleSubmit(handleCreateMessage)}
           className="flex flex-col gap-y-3"
         >
-          <div className="flex items-center gap-3">
-            <div className="flex-1">
+          <div className="flex items-start gap-3">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-x-1">
-                <label className="font-sans txt-compact-small font-medium">
+                <label className="font-sans text-sm font-medium text-pharmint-white">
                   Pick Quote Item
                 </label>
               </div>
-              <span
-                className="txt-small text-ui-fg-subtle"
-                id=":r10:-form-item-description"
-              >
+              <span className="text-sm text-pharmint-muted">
                 Select a quote item to write a message around
               </span>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <Controller
                 name="item_id"
                 control={control}
                 render={({ field: { onChange, ref, value, ...field } }) => (
-                  <Select {...field} onValueChange={onChange} value={value}>
-                    <Select.Trigger className="bg-ui-bg-base" ref={ref}>
-                      <Select.Value />
-                      {value ? <Select.Value /> : "Select Item"}
+                  <Select {...field} onValueChange={onChange} value={value || undefined}>
+                    <Select.Trigger className="bg-background-secondary/50 border border-pharmint-border text-pharmint-white hover:bg-background-secondary/70 transition-colors w-full min-w-0" ref={ref}>
+                      <Select.Value placeholder="Select Item" className="truncate text-left block" />
                     </Select.Trigger>
 
-                    <Select.Content>
-                      {preview?.items?.map((l) => (
-                        <Select.Item key={l.id} value={l.id}>
-                          {l.variant_sku}
+                    <Select.Content className="bg-background-secondary border border-pharmint-border z-50">
+                      {preview?.items && preview.items.length > 0 ? (
+                        preview.items.map((item) => {
+                          const itemName = item.variant_sku || item.title || `Item ${item.id.slice(-4)}`;
+                          return (
+                            <Select.Item
+                              key={item.id}
+                              value={item.id}
+                              className="text-pharmint-white hover:bg-background-secondary/70 focus:bg-background-secondary/70 cursor-pointer"
+                              title={itemName}
+                            >
+                              <span className="truncate max-w-xs block">{itemName}</span>
+                            </Select.Item>
+                          );
+                        })
+                      ) : (
+                        <Select.Item
+                          value=""
+                          disabled
+                          className="text-pharmint-muted cursor-not-allowed"
+                        >
+                          No items available
                         </Select.Item>
-                      ))}
+                      )}
                     </Select.Content>
                   </Select>
                 )}
               />
-              {errors.item_id?.message && <p>{errors.item_id?.message}</p>}
+              {errors.item_id?.message && <p className="text-red-400 text-sm mt-1">{errors.item_id?.message}</p>}
             </div>
           </div>
 
-          <Textarea {...register("text")} />
-          {errors.text?.message && <p>{errors.text?.message}</p>}
+          <Textarea
+            {...register("text")}
+            className="bg-background-secondary/50 border border-pharmint-border text-pharmint-white placeholder:text-pharmint-muted focus:border-accent focus:ring-1 focus:ring-accent"
+            placeholder="Type your message..."
+          />
+          {errors.text?.message && <p className="text-red-400 text-sm">{errors.text?.message}</p>}
 
           <Button
             size="small"
             type="submit"
-            className="self-end"
+            className="self-end bg-accent hover:bg-accent-hover text-white font-semibold disabled:opacity-50"
             disabled={isCreatingMessage}
           >
-            Send
+            {isCreatingMessage ? "Sending..." : "Send"}
           </Button>
         </form>
       </div>
