@@ -36,7 +36,21 @@ export const createRequestForQuoteWorkflow = createWorkflow(
         "shipping_address.*",
         "billing_address.*",
         "items.*",
+        "+items.total",
+        "+items.unit_price",
+        "+items.original_unit_price",
+        "+items.original_total",
         "shipping_methods.*",
+        "+total",
+        "+item_subtotal",
+        "+subtotal",
+        "+shipping_total",
+        "+tax_total",
+        "+discount_total",
+        "+gift_card_total",
+        "+original_total",
+        "+original_tax_total",
+        "completed_at",
         "promotions.code",
       ],
       variables: { id: input.cart_id },
@@ -53,6 +67,16 @@ export const createRequestForQuoteWorkflow = createWorkflow(
     }).config({ name: "customer-query" });
 
     const orderInput = transform({ cart, customer }, ({ cart, customer }) => {
+      // Validation step - ensure cart has valid pricing
+      if (!cart.total || cart.total === 0) {
+        throw new Error(`Cart ${cart.id} has invalid total: ${cart.total}`);
+      }
+
+      const itemsTotal = cart.items.reduce((sum, item) => sum + (item.total || 0), 0);
+      if (Math.abs(itemsTotal - (cart.item_subtotal || 0)) > 0.01) {
+        throw new Error(`Cart item total mismatch: items=${itemsTotal}, subtotal=${cart.item_subtotal}`);
+      }
+
       return {
         is_draft_order: true,
         status: OrderStatus.DRAFT,

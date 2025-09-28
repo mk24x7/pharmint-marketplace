@@ -39,6 +39,24 @@ const QuoteDetails: React.FC<QuoteDetailsProps> = ({
   const [isAccepting, setIsAccepting] = useState(false)
   const [isRejecting, setIsRejecting] = useState(false)
 
+  // Frontend validation for pricing data integrity
+  const quoteTotal = preview.summary?.current_order_total || preview.total
+  const originalTotal = order.total
+
+  useMemo(() => {
+    // Log suspicious pricing patterns for debugging
+    if (process.env.NODE_ENV === 'development') {
+      if (quoteTotal && quoteTotal < 1 && originalTotal && originalTotal > 100) {
+        console.warn('⚠️ Potential pricing corruption detected:', {
+          originalTotal,
+          quoteTotal,
+          ratio: originalTotal / quoteTotal,
+          quote_id: quote.id
+        })
+      }
+    }
+  }, [quoteTotal, originalTotal, quote.id])
+
   return (
     <div className="flex flex-col gap-y-6 p-0">
       <div className="flex gap-2 justify-between items-center mb-6">
@@ -153,7 +171,7 @@ const QuoteDetails: React.FC<QuoteDetailsProps> = ({
                 <span className="text-sm text-pharmint-muted font-medium block">Spending Limit</span>
                 <span className="text-sm text-accent font-medium">
                   {convertToLocale({
-                    amount: quote.customer.employee.spending_limit / 100,
+                    amount: quote.customer.employee.spending_limit ?? 0,
                     currency_code: order.currency_code
                   })}
                 </span>
@@ -207,7 +225,7 @@ const QuoteDetails: React.FC<QuoteDetailsProps> = ({
               </span>
               <span className="text-base text-pharmint-white font-medium">
                 {convertToLocale({
-                  amount: order.total / 100,
+                  amount: originalTotal ?? 0,
                   currency_code: order.currency_code
                 })}
               </span>
@@ -219,29 +237,12 @@ const QuoteDetails: React.FC<QuoteDetailsProps> = ({
               </span>
               <span className="text-xl text-accent font-bold">
                 {convertToLocale({
-                  amount: (preview.summary?.current_order_total || preview.total) / 100,
+                  amount: quoteTotal ?? 0,
                   currency_code: order.currency_code
                 })}
               </span>
             </div>
 
-            {(() => {
-              const quoteTotal = preview.summary?.current_order_total || preview.total;
-              return order.total !== quoteTotal && (
-                <div className="flex items-center justify-between bg-background-secondary/30 rounded-lg p-3">
-                  <span className="text-sm text-pharmint-muted">
-                    Savings
-                  </span>
-                  <span className="text-sm text-green-400 font-medium">
-                    {order.total > quoteTotal ? '+' : '-'}
-                    {convertToLocale({
-                      amount: Math.abs(order.total - quoteTotal) / 100,
-                      currency_code: order.currency_code
-                    })}
-                  </span>
-                </div>
-              )
-            })()}
           </div>
         </Container>
 

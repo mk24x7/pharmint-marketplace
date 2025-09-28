@@ -39,6 +39,7 @@ export const PromptModal = ({
             variant="secondary"
             onClick={() => setIsOpen(false)}
             disabled={isLoading}
+            className="bg-background-secondary/50 border border-pharmint-border text-pharmint-white hover:bg-background-secondary/70 hover:text-accent transition-all duration-200"
           >
             Cancel
           </Button>
@@ -46,6 +47,7 @@ export const PromptModal = ({
             onClick={onAction}
             disabled={isLoading}
             isLoading={isLoading}
+            className="bg-accent hover:bg-accent-hover text-white"
           >
             Confirm
           </Button>

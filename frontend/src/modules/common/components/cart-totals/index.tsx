@@ -7,17 +7,12 @@ import { Badge } from "@medusajs/ui"
 type CartTotalsProps = {
   totals: {
     total?: number | null
-    subtotal?: number | null
+    item_subtotal?: number | null
     tax_total?: number | null
     shipping_total?: number | null
     discount_total?: number | null
     gift_card_total?: number | null
     currency_code: string
-    item_subtotal?: number | null
-    item_total?: number | null
-    shipping_subtotal?: number | null
-    shipping_methods?: {adjustments?: {amount: number}[]}[]
-    items?: {adjustments?: {amount: number}[]}[]
   }
 }
 
@@ -28,54 +23,37 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
     tax_total,
     gift_card_total,
     item_subtotal,
-    item_total,
-    shipping_subtotal,
     shipping_total,
-    shipping_methods,
-    items
+    discount_total,
   } = totals
-
-  const totalItemDiscount = items?.flatMap(i => i.adjustments).reduce((acc, curr) => (curr?.amount || 0) + acc, 0)
-  const totalShippingDiscount = shipping_methods?.flatMap(sm => sm.adjustments).reduce((acc, curr) => (curr?.amount || 0) + acc, 0)
 
   return (
     <div>
       <div className="flex flex-col gap-y-2 txt-medium text-pharmint-muted">
         <div className="flex items-center justify-between">
           <span>Subtotal (excl. shipping and taxes)</span>
-          <div className="flex items-center gap-2">
-            <span className={totalItemDiscount ? 'line-through text-pharmint-muted' : 'text-pharmint-white'} data-testid="cart-item-subtotal" data-value={item_subtotal || 0}>
-              {convertToLocale({ amount: item_subtotal ?? 0, currency_code })}
-            </span>
-            {!!totalItemDiscount && (
-              <div className="flex items-center justify-between">
+          <span className="text-pharmint-white" data-testid="cart-item-subtotal" data-value={item_subtotal || 0}>
+            {convertToLocale({ amount: item_subtotal ?? 0, currency_code })}
+          </span>
+        </div>
+        {!!discount_total && (
+          <div className="flex items-center justify-between">
+            <span>Discount</span>
             <span
               className="text-accent"
               data-testid="cart-discount"
-              data-value={item_total || 0}
+              data-value={discount_total || 0}
             >
-              {convertToLocale({ amount: item_total ?? 0, currency_code })}
+              -{" "}
+              {convertToLocale({ amount: discount_total ?? 0, currency_code })}
             </span>
-              </div>
-            )}
           </div>
-        </div>
+        )}
         <div className="flex items-center justify-between">
           <span>Shipping</span>
-          <div className="flex items-center gap-2">
-            <span className={totalShippingDiscount ? 'line-through text-pharmint-muted' : 'text-pharmint-white'} data-testid="cart-shipping" data-value={shipping_subtotal || 0}>
-              {convertToLocale({ amount: shipping_subtotal ?? 0, currency_code })}
-            </span>
-            {!!totalShippingDiscount && (
-              <span
-                className="text-accent"
-                data-testid="cart-shipping-discount"
-                data-value={shipping_total || 0}
-              >
-              {convertToLocale({ amount: shipping_total ?? 0, currency_code })}
-            </span>
-            )}
-          </div>
+          <span className="text-pharmint-white" data-testid="cart-shipping" data-value={shipping_total || 0}>
+            {convertToLocale({ amount: shipping_total ?? 0, currency_code })}
+          </span>
         </div>
         <div className="flex justify-between">
           <span className="flex gap-x-1 items-center ">Taxes</span>

@@ -23,14 +23,14 @@ export const AmountCell = ({
         "text-green-500": hasChanged && amount > originalAmount,
       })}>
         {convertToLocale({
-          amount: amount / 100,
+          amount: amount ?? 0,
           currency_code: currencyCode
         })}
       </span>
       {hasChanged && (
         <span className="text-xs text-ui-fg-muted line-through">
           {convertToLocale({
-            amount: originalAmount / 100,
+            amount: originalAmount ?? 0,
             currency_code: currencyCode
           })}
         </span>
