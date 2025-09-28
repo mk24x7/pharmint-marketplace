@@ -9,6 +9,7 @@ import User from "@modules/common/icons/user"
 import MapPin from "@modules/common/icons/map-pin"
 import Package from "@modules/common/icons/package"
 import Star from "@modules/common/icons/star"
+import FilePlus from "@modules/common/icons/file-plus"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
 import { signout } from "@lib/data/customer"
@@ -103,6 +104,19 @@ const AccountNav = ({
                   </LocalizedClientLink>
                 </li>
                 <li>
+                  <LocalizedClientLink
+                    href="/account/quotes"
+                    className="flex items-center justify-between py-4 border-b border-pharmint-border px-8 text-pharmint-white hover:text-accent transition-colors duration-200"
+                    data-testid="quotes-link"
+                  >
+                    <div className="flex items-center gap-x-2">
+                      <FilePlus size={20} />
+                      <span>Quotes</span>
+                    </div>
+                    <ChevronDown className="transform -rotate-90" />
+                  </LocalizedClientLink>
+                </li>
+                <li>
                   <button
                     type="button"
                     className="flex items-center justify-between py-4 border-b border-pharmint-border px-8 w-full text-pharmint-white hover:text-accent transition-colors duration-200"
@@ -171,6 +185,15 @@ const AccountNav = ({
                   data-testid="reviews-link"
                 >
                   Reviews
+                </AccountNavLink>
+              </li>
+              <li>
+                <AccountNavLink
+                  href="/account/quotes"
+                  route={route!}
+                  data-testid="quotes-link"
+                >
+                  Quotes
                 </AccountNavLink>
               </li>
               <li>

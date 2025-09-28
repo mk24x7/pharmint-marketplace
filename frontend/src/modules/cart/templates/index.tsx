@@ -31,7 +31,7 @@ const CartTemplate = ({
                 {cart && cart.region && (
                   <>
                     <div className="bg-background-secondary/50 backdrop-blur-sm border border-pharmint-border rounded-xl py-6 px-6">
-                      <Summary cart={cart as any} />
+                      <Summary cart={cart as any} customer={customer} />
                     </div>
                   </>
                 )}
