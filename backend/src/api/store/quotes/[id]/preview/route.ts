@@ -32,7 +32,7 @@ export const GET = async (
     Modules.ORDER
   );
 
-  const preview = await orderModuleService.previewOrderChange(
+  const preview = await orderModuleService.retrieveOrderPreview(
     quote.draft_order_id
   );
 
