@@ -19,6 +19,7 @@ type CountryOption = {
   country: string
   region: string
   label: string
+  externalUrl?: string
 }
 
 type CountrySelectProps = {
@@ -38,7 +39,7 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
   const { state, close } = toggleState
 
   const options = useMemo(() => {
-    return regions
+    const regionOptions = regions
       ?.map((r) => {
         return r.countries?.map((c) => ({
           country: c.iso_2,
@@ -46,7 +47,25 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
           label: c.display_name,
         }))
       })
-      .flat()
+      .flat() || []
+
+    // Add additional countries with external URLs
+    const additionalCountries = [
+      {
+        country: "np",
+        region: "external",
+        label: "Nepal",
+        externalUrl: "https://pharmint.com.np"
+      },
+      {
+        country: "th",
+        region: "external",
+        label: "Thailand",
+        externalUrl: "https://pharmint.co.th"
+      }
+    ]
+
+    return [...regionOptions, ...additionalCountries]
       .sort((a, b) => (a?.label ?? "").localeCompare(b?.label ?? ""))
   }, [regions])
 
@@ -58,7 +77,13 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
   }, [options, countryCode])
 
   const handleChange = (option: CountryOption) => {
-    updateRegion(option.country, currentPath)
+    if (option.externalUrl) {
+      // Redirect to external URL for Nepal and Thailand
+      window.location.href = option.externalUrl
+    } else {
+      // Handle normal region change for other countries
+      updateRegion(option.country, currentPath)
+    }
     close()
   }
 
