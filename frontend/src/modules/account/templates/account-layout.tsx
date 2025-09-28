@@ -40,7 +40,7 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({
             </span>
           </div>
           <div>
-            <UnderlineLink href="/customer-service" className="text-accent hover:text-accent-hover">
+            <UnderlineLink href="/customer-service" className="!text-accent hover:!text-accent-hover">
               Customer Service
             </UnderlineLink>
           </div>

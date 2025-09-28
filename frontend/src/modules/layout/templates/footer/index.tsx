@@ -116,37 +116,39 @@ export default async function Footer() {
               </div>
             )}
             <div className="flex flex-col gap-y-2">
-              <span className="txt-small-plus text-white">Pharmint</span>
+              <span className="txt-small-plus text-white">Company</span>
               <ul className="grid grid-cols-1 gap-y-2 text-pharmint-muted txt-small">
                 <li>
-                  <a
-                    href="https://github.com/medusajs"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
+                    href="/about"
                     className="hover:text-accent transition-colors"
                   >
-                    GitHub
-                  </a>
+                    About Us
+                  </LocalizedClientLink>
                 </li>
                 <li>
-                  <a
-                    href="https://docs.medusajs.com"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
+                    href="/contact"
                     className="hover:text-accent transition-colors"
                   >
-                    Documentation
-                  </a>
+                    Contact Us
+                  </LocalizedClientLink>
                 </li>
                 <li>
-                  <a
-                    href="https://github.com/medusajs/nextjs-starter-medusa"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
+                    href="/careers"
                     className="hover:text-accent transition-colors"
                   >
-                    Source code
-                  </a>
+                    Careers
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink
+                    href="/blog"
+                    className="hover:text-accent transition-colors"
+                  >
+                    Blog
+                  </LocalizedClientLink>
                 </li>
               </ul>
             </div>
