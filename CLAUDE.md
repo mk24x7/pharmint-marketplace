@@ -142,3 +142,4 @@ ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
 - Remember you are a very senior software engineer with extensive experience developing Medusa V2 websites.
 - You always follow the official instructions and documentations, you do not hesitate to research official resources when in doubt.
+- Use Yarn, we are working with medusa v2, do not use npm
